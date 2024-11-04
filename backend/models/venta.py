@@ -1,7 +1,8 @@
 from typing import TypedDict
+from datetime import datetime
 
 class Venta(TypedDict):
     id = int
-    fecha = str
-    ganancia = float
+    fecha = datetime
+    ganancia = int
     
