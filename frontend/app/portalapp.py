@@ -2,11 +2,12 @@ import flet as fl
 from typing import Callable
 
 from frontend.app.enums.routes import Routes
-
-from frontend.home.view import mostrar_inicio
-
 from frontend.app.enums.config import conf
 
+from frontend.home.view import mostrar_inicio
+from frontend.deudores.view import mostrar_deudores
+from frontend.productos.view import mostrar_productos
+from frontend.ventas.view import mostrar_ventas
 
 class Portalapp:
     def __init__(self):
@@ -54,9 +55,9 @@ class Portalapp:
 
             all_routes: dict[str, Callable] = {
                 Routes.HOME: mostrar_inicio,
-                # Routes.PRODUCTOS: process_productos,
-                # Routes.VENTAS: create_ventas,
-                # Routes.DEUDORES: mostrar_deudores,
+                Routes.PRODUCTOS: mostrar_productos,
+                Routes.VENTAS: mostrar_ventas,
+                Routes.DEUDORES: mostrar_deudores,
             }
 
             page.views.append(
