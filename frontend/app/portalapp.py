@@ -8,10 +8,12 @@ from frontend.home.view import mostrar_inicio
 
 from frontend.app.enums.config import conf
 
+from backend.data.managers.csv_manager import CSVManager
+
 
 class Portalapp:
     def __init__(self):
-        pass
+        self.__sql_manager = CSVManager()
 
     async def main(self, page: fl.Page):
         page.title = conf.get_name()
