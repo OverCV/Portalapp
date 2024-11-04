@@ -1,15 +1,13 @@
-# from typing import Callable
 import flet as fl
 from typing import Callable
 
 from frontend.app.enums.routes import Routes
-
-from frontend.home.view import mostrar_inicio
-
 from frontend.app.enums.config import conf
 
-from backend.data.managers.csv_manager import CSVManager
-
+from frontend.home.view import mostrar_inicio
+from frontend.deudores.view import mostrar_deudores
+from frontend.productos.view import mostrar_productos
+from frontend.ventas.view import mostrar_ventas
 
 class Portalapp:
     def __init__(self):
@@ -29,6 +27,20 @@ class Portalapp:
                     icon=fl.icons.HOME_OUTLINED,
                     selected_icon=fl.icons.HOME_FILLED,
                     label='Inicio',
+                ),fl.NavigationBarDestination(
+                    icon=fl.icons.INVENTORY_2_OUTLINED,
+                    selected_icon=fl.icons.INVENTORY_2,
+                    label='Productos',
+                ),
+                fl.NavigationBarDestination(
+                    icon=fl.icons.SHOPPING_CART_OUTLINED,
+                    selected_icon=fl.icons.SHOPPING_CART,
+                    label='Ventas',
+                ),
+                fl.NavigationBarDestination(
+                    icon=fl.icons.PEOPLE_OUTLINED,
+                    selected_icon=fl.icons.PEOPLE,
+                    label='Deudores',
                 ),
             ],
             on_change=self.navigation_changed,
@@ -43,6 +55,9 @@ class Portalapp:
 
             all_routes: dict[str, Callable] = {
                 Routes.HOME: mostrar_inicio,
+                Routes.PRODUCTOS: mostrar_productos,
+                Routes.VENTAS: mostrar_ventas,
+                Routes.DEUDORES: mostrar_deudores,
             }
 
             page.views.append(
@@ -64,5 +79,9 @@ class Portalapp:
     async def navigation_changed(self, e: fl.Page):
         added_routes = [
             Routes.HOME,
+            Routes.PRODUCTOS,
+            Routes.VENTAS,
+            Routes.DEUDORES
         ]
         e.page.go(added_routes[e.control.selected_index])
+        
