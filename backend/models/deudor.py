@@ -1,8 +1,6 @@
-from typing import TypedDict
+from typing import TypedDict, Optional
 
 class Deudor(TypedDict):
     id = int
-    id_venta = int
     nombre = str
-    valor_deuda = float
-    creacion_deuda = str
+    telfono = Optional[str]
