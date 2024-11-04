@@ -1,8 +1,9 @@
-from typing import TypedDict
 from datetime import datetime
+from dataclasses import dataclass
 
-class Venta(TypedDict):
+
+@dataclass
+class Venta:
     id = int
     fecha = datetime
     ganancia = int
-    

@@ -1,10 +1,11 @@
 from .operative_system import OS
 from .dimensions import Dim
+from .app import AppParams
 
 
 class AppConfig:
     def __init__(self):
-        self.__APP_NAME: str = 'Portalapp'
+        self.__APP_NAME: str = AppParams.APP_NAME
         self.__APP_OS: str = OS.ANDROID
 
     def get_name(self) -> str:

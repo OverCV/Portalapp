@@ -1,6 +1,9 @@
-from typing import TypedDict, Optional
+from dataclasses import dataclass
+from typing import Optional
 
-class Deudor(TypedDict):
+
+@dataclass
+class Deudor:
     id = int
     nombre = str
     telfono = Optional[str]

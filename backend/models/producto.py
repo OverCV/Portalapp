@@ -1,6 +1,8 @@
-from typing import TypeDict
+from dataclasses import dataclass
 
-class Producto(TypeDict):
+
+@dataclass
+class Producto:
     id = int
     nombre = str
     precio = int
