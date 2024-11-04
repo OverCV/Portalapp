@@ -1,0 +1,22 @@
+@startuml
+actor Vendedor
+' actor Cliente
+' actor Proveedor
+
+rectangle "PortalApp" {
+  usecase "Registrar Productos" as UC1
+  usecase "Consultar Productos" as UC2
+  usecase "Notificar de deudas" as UC3
+  usecase "Reporte financiero" as UC4
+  usecase "Registrar venta" as UC5
+  usecase "Consultar registro de ventas"  as UC6
+}
+
+Vendedor --- UC1 : "Gestionar Productos"
+Vendedor --- UC2 : "Gestionar Productos"
+Vendedor <-- UC3 : ""
+Vendedor <-- UC4 : ""
+Vendedor --- UC5 : "Registrar venta"
+Vendedor --- UC6 : "Gestionar deudores"
+
+@enduml

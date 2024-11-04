@@ -1,0 +1,39 @@
+@startuml
+class Vendedor {
+    ' +nombre: string
+    ' +email: string
+}
+
+class Cliente {
+    ' +nombre: string
+    ' +email: string
+}
+
+class Producto {
+    ' +nombre: string
+    ' +precio: float
+    ' +stock: int
+}
+
+class Venta {
+    ' +fecha: datetime
+    ' +total: float
+}
+
+class Deuda {
+    ' +monto: float
+}
+
+class Reporte {
+    ' +generarReporte(): string
+}
+
+' Relaciones con cardinalidad
+Vendedor "1" -- "0..*" Producto : "Gestiona"
+Vendedor "1" -- "0..*" Venta : "Registra"
+Cliente "1" -- "0..*" Venta : "Realiza"
+Venta "1" -- "1..*" Producto : "Incluye"
+Cliente "1" -- "0..*" Deuda : "Genera"
+Deuda "0..*" -- "1" Venta : "Relacionada con"
+Vendedor "1" -- "0..*" Reporte : "Genera"
+@enduml

@@ -1,0 +1,123 @@
+@startuml
+allow_mixing
+package "portalapp" {
+
+    package "app" {
+        package "core" {
+            package "config" {
+                class environment
+                class settings
+            }
+            package "constants" {
+                class app_constants
+                class report_types
+                class routes
+            }
+            package "enums" {
+                class payment_status
+                class report_period
+                class report_format
+            }
+            package "utils" {
+                class date_formatter
+                class report_generator
+                class export_utils
+            }
+        }
+
+        package "domain" {
+            package "entities" {
+                class product
+                class sale
+                class debt
+                class seller
+                class client
+                class report
+            }
+            package "repositories" {
+                class ireport_repository
+            }
+            package "usecases" {
+                package "reports" {
+                    class generate_inventory_report
+                    class generate_sales_report
+                    class generate_debts_report
+                    class export_report
+                }
+            }
+        }
+
+        package "data" {
+            package "models" {
+                class report_model
+            }
+            package "repositories" {
+                class report_repository
+            }
+            package "datasources" {
+                package "local" {
+                    class json_storage
+                }
+                package "exporters" {
+                    class pdf_exporter
+                    class excel_exporter
+                }
+            }
+        }
+
+        package "presentation" {
+            package "state" {
+                class report_state
+            }
+            package "pages" {
+                package "reports" {
+                    class reports_page
+                    class report_detail_page
+                    package "widgets" {
+                        class report_filters
+                        class report_chart
+                        class report_table
+                    }
+                }
+            }
+            package "widgets" {
+                package "common" {
+                    class date_picker
+                    class export_button
+                }
+                package "reports" {
+                    class sales_summary_card
+                    class inventory_status_card
+                    class debt_summary_card
+                }
+            }
+        }
+    }
+
+    package "docs" {
+        package "reports" {
+            class report_types_md
+            class export_formats_md
+        }
+    }
+
+    package "storage" {
+        package "data" {
+            package "reports" {
+                package "sales_reports"
+                package "inventory_reports"
+                package "debt_reports"
+            }
+        }
+    }
+
+    package "tests" {
+        package "unit" {
+            class test_report_generation
+        }
+        package "integration" {
+            class test_report_repository
+        }
+    }
+}
+@enduml

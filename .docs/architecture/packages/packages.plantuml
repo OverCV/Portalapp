@@ -1,0 +1,120 @@
+@startuml
+allowmixing
+
+package "portalapp" {
+
+    package "app" {
+        package "core" {
+            package "config" {}
+            package "constants" {}
+            package "enums" {}
+            package "utils" {}
+        }
+
+        package "domain" {
+            package "entities" {}
+            package "repositories" {}
+            package "usecases" {
+                package "reports" {}
+            }
+        }
+
+        package "data" {
+            package "models" {}
+            package "repositories" {}
+            package "datasources" {
+                package "local" {}
+                package "exporters" {}
+            }
+        }
+
+        package "presentation" {
+            package "state" {}
+            package "pages" {
+                package "reports" {
+                    package "widgets" {}
+                }
+            }
+            package "widgets" {
+                package "common" {}
+                package "reports" {}
+            }
+        }
+    }
+
+    package "docs" {
+        package "reports" {}
+    }
+
+    package "storage" {
+        package "data" {
+            package "reports" {
+                package "sales_reports" {}
+                package "inventory_reports" {}
+                package "debt_reports" {}
+            }
+        }
+    }
+
+    package "tests" {
+        package "unit" {}
+        package "integration" {}
+    }
+
+    ' Relación entre los paquetes principales de "app"
+    app +-- core
+    app +-- domain
+    app +-- data
+    app +-- presentation
+
+    ' Relaciones dentro de "core"
+    core +-- config
+    core +-- constants
+    core +-- enums
+    core +-- utils
+
+    ' Relaciones dentro de "domain"
+    domain +-- entities
+    domain +-- repositories
+    domain +-- usecases
+
+    ' Relaciones dentro de "data"
+    data +-- models
+    data +-- repositories
+    data +-- datasources
+
+    ' Relaciones dentro de "datasources"
+    datasources +-- local
+    datasources +-- exporters
+
+    ' Relaciones dentro de "presentation"
+    presentation +-- state
+    presentation +-- pages
+    presentation +-- widgets
+
+    ' Relaciones dentro de "pages"
+    pages +-- reports
+
+    ' Relaciones dentro de "reports" de pages
+    reports +-- widgets
+
+    ' Relaciones dentro de "widgets"
+    widgets +-- common
+    widgets +-- reports
+
+    ' Relaciones dentro de "docs"
+    docs +-- reports
+
+    ' Relaciones dentro de "storage"
+    storage +-- data
+    data +-- reports
+    reports +-- sales_reports
+    reports +-- inventory_reports
+    reports +-- debt_reports
+
+    ' Relaciones dentro de "tests"
+    tests +-- unit
+    tests +-- integration
+
+}
+@enduml

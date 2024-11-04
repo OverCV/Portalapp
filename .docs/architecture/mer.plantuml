@@ -1,0 +1,43 @@
+@startuml
+entity Vendedor {
+    +id: int <<PK>>
+    -nombre: string
+    -email: string
+}
+
+entity Cliente {
+    +id: int <<PK>>
+    -nombre: string
+    -telefono: string
+}
+
+entity Producto {
+    +id: int <<PK>>
+    -nombre: string
+    -precio: float
+    -stock: int
+}
+
+entity Venta {
+    +id: int <<PK>>
+    -idCliente: string <<FK>>
+    -idProducto: string <<FK>>
+    -fecha: datetime
+    -total: float
+}
+
+entity Deuda {
+    -id: int <<PK>>
+    -idVenta: int <<FK>>
+    -monto: float
+    -fechaVencimiento: datetime
+}
+
+' Relaciones con cardinalidad
+Vendedor "1" -- "0..*" Producto : "Gestiona"
+Vendedor "1" -- "0..*" Venta : "Registra"
+Cliente "1" -- "0..*" Venta : "Realiza"
+Venta "1" -- "1..*" Producto : "Incluye"
+Cliente "1" -- "0..*" Deuda : "Genera"
+Deuda "0..1" -- "1" Venta : "Relacionada con"
+@enduml

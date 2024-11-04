@@ -1,0 +1,98 @@
+@startuml
+actor Vendedor
+participant "InterfazUsuario" as UI
+participant "VentasController" as VC
+participant "InventarioController" as IC
+participant "DeudasController" as DC
+participant "Producto" as P
+participant "Venta" as V
+participant "Deuda" as D
+participant "Recordatorio" as R
+participant "Reporte" as Rep
+
+== Inicio de la Venta ==
+activate Vendedor
+Vendedor -> UI : Ingresar productos y detalles de la venta
+activate UI
+UI -> VC : Procesar venta
+activate VC
+VC -> IC : Consultar disponibilidad de stock
+activate IC
+IC -> P : Verificar stock del producto
+activate P
+P --> IC : Stock suficiente
+deactivate P
+IC --> VC : Confirmación de stock
+deactivate IC
+
+== Registro de Venta ==
+VC -> V : Crear registro de venta
+activate V
+V --> VC : Confirmación de venta registrada
+deactivate V
+VC -> UI : Mostrar total de la venta
+deactivate VC
+UI -> Vendedor : Confirmación de venta realizada
+deactivate UI
+
+== Actualización de Inventario ==
+VC -> IC : Actualizar inventario
+activate IC
+IC -> P : Reducir stock de productos vendidos
+activate P
+P --> IC : Confirmación de actualización
+deactivate P
+IC --> VC : Inventario actualizado
+deactivate IC
+
+== Gestión de Deudas ==
+alt Venta a crédito
+    VC -> DC : Registrar deuda del cliente
+    activate DC
+    DC -> D : Crear registro de deuda
+    activate D
+    D --> DC : Confirmación de deuda registrada
+    deactivate D
+    DC -> R : Crear recordatorio para el vendedor
+    activate R
+    R --> DC : Recordatorio creado
+    deactivate R
+    DC --> VC : Deuda gestionada
+    deactivate DC
+else Venta al contado
+    VC -> UI : Confirmar pago completo
+end
+
+' == Generación de Reportes ==
+' Vendedor -> UI : Generación de reporte de ventas y deudas
+' activate UI
+' UI -> VC : Solicitar generación de reporte de ventas
+' activate VC
+' VC -> V : Extraer datos de ventas
+' V --> VC : Datos extraídos
+' VC -> Rep : Generar reporte de ventas
+' activate Rep
+' Rep --> VC : Reporte de ventas generado
+' deactivate Rep
+
+' UI -> VC : Solicitar generación de reporte de deudas
+' VC -> DC : Solicitar datos de deudas
+' activate DC
+' DC -> D : Extraer datos de deudas
+' D --> DC : Datos de deudas extraídos
+' deactivate D
+' DC --> VC : Datos de deudas enviados
+' VC -> Rep : Generar reporte de deudas
+' activate Rep
+' Rep --> VC : Reporte de deudas generado
+' deactivate Rep
+
+' VC -> UI : Mostrar reportes generados al vendedor
+' deactivate VC
+' UI -> Vendedor : Reportes generados
+' deactivate UI
+
+== Finalización ==
+UI --> Vendedor : Confirmar finalización del proceso de venta
+deactivate Vendedor
+@enduml
