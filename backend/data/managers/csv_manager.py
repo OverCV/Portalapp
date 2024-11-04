@@ -18,6 +18,7 @@ class CSVManager(Manager):
         # Rutas de los archivos
         self.productos_file = self.data_dir / CSVModels.PRODUCTOS
         self.ventas_file = self.data_dir / CSVModels.VENTAS
+        self.deudas_file = self.data_dir / CSVModels.DEUDAS
         self.deudores_file = self.data_dir / CSVModels.DEUDORES
         self.venta_productos_file = self.data_dir / CSVModels.VENTA_PRODUCTOS
 
@@ -27,10 +28,10 @@ class CSVManager(Manager):
     def _init_files(self):
         default_columns = {
             self.productos_file: ['id', 'nombre', 'precio', 'stock'],
-            # Actualizamos para solo contener la venta
-            self.ventas_file: ['id', 'fecha_venta', 'ganancia'],
-            self.venta_productos_file: ['id_venta', 'id_producto', 'cantidad'],
-            self.deudores_file: ['id', 'nombre_cliente', 'valor_deuda', 'creacion'],
+            self.ventas_file: ['id', 'fecha', 'ganancia'],
+            self.deudas_file: ['id', 'id_venta', 'id_deudor', 'valor_deuda', 'creacion_deuda'],
+            self.venta_productos_file: ['id', 'id_venta', 'id_producto', 'cantidad'],
+            self.deudores_file: ['id', 'nombre', 'telefono'],
         }
         for file, columns in default_columns.items():
             if not file.exists():
