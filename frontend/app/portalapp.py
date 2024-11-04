@@ -1,4 +1,3 @@
-# from typing import Callable
 import flet as fl
 from typing import Callable
 
@@ -27,6 +26,20 @@ class Portalapp:
                     icon=fl.icons.HOME_OUTLINED,
                     selected_icon=fl.icons.HOME_FILLED,
                     label='Inicio',
+                ),fl.NavigationBarDestination(
+                    icon=fl.icons.INVENTORY_2_OUTLINED,
+                    selected_icon=fl.icons.INVENTORY_2,
+                    label='Productos',
+                ),
+                fl.NavigationBarDestination(
+                    icon=fl.icons.SHOPPING_CART_OUTLINED,
+                    selected_icon=fl.icons.SHOPPING_CART,
+                    label='Ventas',
+                ),
+                fl.NavigationBarDestination(
+                    icon=fl.icons.PEOPLE_OUTLINED,
+                    selected_icon=fl.icons.PEOPLE,
+                    label='Deudores',
                 ),
             ],
             on_change=self.navigation_changed,
@@ -41,6 +54,9 @@ class Portalapp:
 
             all_routes: dict[str, Callable] = {
                 Routes.HOME: mostrar_inicio,
+                # Routes.PRODUCTOS: process_productos,
+                # Routes.VENTAS: create_ventas,
+                # Routes.DEUDORES: mostrar_deudores,
             }
 
             page.views.append(
@@ -62,5 +78,9 @@ class Portalapp:
     async def navigation_changed(self, e: fl.Page):
         added_routes = [
             Routes.HOME,
+            Routes.PRODUCTOS,
+            Routes.VENTAS,
+            Routes.DEUDORES
         ]
         e.page.go(added_routes[e.control.selected_index])
+        
