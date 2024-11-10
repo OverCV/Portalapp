@@ -1,18 +1,22 @@
+# backend/services/ventas.py
+
 from datetime import datetime
-from backend.data.managers.manager import Manager
+from backend.data.managers.csv_manager import CSVManager
 from backend.models.venta_producto import VentaProducto
 from backend.models.producto import Producto
 from backend.models.venta import Venta
 
 from backend.app.services.productos import put_producto, get_producto_by_id
 
+from icecream import ic
 
-def get_ventas(data_manager: Manager):
+
+def get_ventas(data_manager: CSVManager):
     return data_manager.get_data(Venta)
 
 
 def add_venta(
-    data_manager: Manager,
+    data_manager: CSVManager,
     venta_productos: list[VentaProducto],
 ) -> dict:
     # Crear la venta principal
@@ -44,7 +48,7 @@ def add_venta(
     return venta
 
 
-def calcular_total_venta(data_manager: Manager, venta_productos: list[VentaProducto]) -> float:
+def calcular_total_venta(data_manager: CSVManager, venta_productos: list[VentaProducto]) -> float:
     """Calcula el total de la venta en base a la lista de productos."""
     total: int = 0
     for venta in venta_productos:

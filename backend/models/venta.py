@@ -5,5 +5,5 @@ from backend.models.base_model import BaseModel
 
 @dataclass
 class Venta(BaseModel):
-    fecha = datetime
-    ganancia = int
+    fecha: datetime
+    ganancia: int

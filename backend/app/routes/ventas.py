@@ -1,6 +1,6 @@
 # backend/routes/ventas.py
-from backend.data.managers.manager import Manager
 
+from backend.data.managers.csv_manager import CSVManager
 from backend.models.producto import Producto
 from backend.models.venta_producto import VentaProducto
 
@@ -12,19 +12,18 @@ from backend.app.services.ventas import (
 )
 
 
-def registrar_venta(data_manager: Manager, venta_productos: list[VentaProducto]):
+def registrar_venta(data_manager: CSVManager, venta_productos: list[VentaProducto]):
     """Función que maneja el registro de una venta completa."""
     return add_venta(data_manager, venta_productos)
 
 
-def obtener_ventas(data_manager: Manager):
+def obtener_ventas(data_manager: CSVManager):
     return get_ventas(data_manager)
 
 
-def obtener_total_venta(data_manager: Manager, venta_productos: list[VentaProducto]):
+def obtener_total_venta(data_manager: CSVManager, venta_productos: list[VentaProducto]):
     return calcular_total_venta(data_manager, venta_productos)
 
 
-def obtener_productos_disponibles(data_manager: Manager):
-    productos = data_manager.get_data(Producto)
+def obtener_productos_disponibles(productos: list[Producto]) -> list[Producto]:
     return filtrar_productos_con_stock(productos)
