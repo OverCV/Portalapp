@@ -1,7 +1,10 @@
-from typing import TypedDict
 from datetime import datetime
 
-class Deuda(TypedDict):
+from dataclasses import dataclass
+
+
+@dataclass
+class Deuda:
     id = int
     id_venta = int
     id_deudor = int

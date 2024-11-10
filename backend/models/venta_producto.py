@@ -1,6 +1,8 @@
-from typing import TypedDict
+from dataclasses import dataclass
 
-class VentaProducto(TypedDict):
+
+@dataclass
+class VentaProducto:
     id = int
     id_venta = int
     id_producto = int
