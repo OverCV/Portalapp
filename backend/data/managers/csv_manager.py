@@ -69,6 +69,13 @@ class CSVManager:
 
     def get_data(self, model_class: Type[T]) -> List[T]:
         return self._read_file(model_class)
+    
+    def get_data_by_id(self, model_class: Type[T], id_value: int) -> T:
+        data = self._read_file(model_class)
+        for item in data:
+            if item.id == id_value:
+                return item
+        raise ValueError(f'Item with id {id_value} not found in {model_class.__name__}')
 
     def put_data(self, model_class: Type[T], id_value: int, updates: Dict[str, Any]) -> T:
         data = self._read_file(model_class)
@@ -101,3 +108,5 @@ class CSVManager:
         elif isinstance(field_type, datetime):
             return datetime.fromisoformat(value)
         return value
+    
+    
