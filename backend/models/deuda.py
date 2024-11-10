@@ -1,12 +1,11 @@
 from datetime import datetime
-
 from dataclasses import dataclass
+from backend.models.base_model import BaseModel
 
 
 @dataclass
-class Deuda:
-    id = int
-    id_venta = int
-    id_deudor = int
-    valor_deuda = int
-    creacion_deuda = datetime
+class Deuda(BaseModel):
+    id_venta: int
+    id_deudor: int
+    valor_deuda: int
+    creacion_deuda: datetime

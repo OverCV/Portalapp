@@ -1,9 +1,9 @@
 from datetime import datetime
 from dataclasses import dataclass
+from backend.models.base_model import BaseModel
 
 
 @dataclass
-class Venta:
-    id = int
+class Venta(BaseModel):
     fecha = datetime
     ganancia = int
