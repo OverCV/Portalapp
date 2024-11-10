@@ -1,7 +1,9 @@
-from typing import TypedDict
+from dataclasses import dataclass
+from backend.models.base_model import BaseModel
 
-class VentaProducto(TypedDict):
-    id = int
+
+@dataclass
+class VentaProducto(BaseModel):
     id_venta = int
     id_producto = int
     cantidad = int

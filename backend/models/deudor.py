@@ -1,6 +1,9 @@
-from typing import TypedDict, Optional
+from dataclasses import dataclass
+from typing import Optional
+from backend.models.base_model import BaseModel
 
-class Deudor(TypedDict):
-    id = int
+
+@dataclass
+class Deudor(BaseModel):
     nombre = str
     telfono = Optional[str]

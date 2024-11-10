@@ -1,8 +1,9 @@
-from typing import TypedDict
 from datetime import datetime
+from dataclasses import dataclass
+from backend.models.base_model import BaseModel
 
-class Venta(TypedDict):
-    id = int
+
+@dataclass
+class Venta(BaseModel):
     fecha = datetime
     ganancia = int
-    
