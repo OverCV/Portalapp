@@ -1,0 +1,64 @@
+@startuml Diagrama de clases
+
+
+class Producto {
+    -id: int
+    +nombre: string
+    +precio: float
+    +stock: int
+    +Producto()
+}
+
+class VentasProductos {
+    -id: int
+    -id_venta: int
+    -id_producto: int
+    +cantidad: int
+    +VentasProductos()
+}
+
+class Venta {
+    -id: int
+    +fecha: datetime
+    +ganancia: float
+    +Venta()
+}
+
+Venta "1" -- "0..*" VentasProductos : "Incluye"
+Producto "1" -- "0..*" VentasProductos : "Gestiona"
+
+/'
+' Classes for later on implementation...
+
+class Deuda {
+    -id: int
+    -id_cliente: int
+    +valor: float
+    +Deuda()
+}
+
+class Cliente {
+    -id: int
+    +nombre: string
+    +telefono: string
+    +Cliente()
+}
+
+class Vendedor {
+    -id: int
+    +nombre: string
+    +email: string
+    +Vendedor()
+}
+
+class Reporte {
+    -id: int
+    +nombre: string
+    +fecha: datetime
+    +reporte: string
+    +Reporte()
+}
+
+'/
+
+@enduml

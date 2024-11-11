@@ -1,43 +1,114 @@
-@startuml
-entity Deudor {
-    +id: int <<PK>>
-    -nombre: string
-    -telefono: string
+@startuml "Diagrama Entidad Relación"
+
+' Estilo del diagrama
+skinparam linetype ortho
+skinparam class {
+    BackgroundColor White
+    ArrowColor Black
+    BorderColor Black
 }
 
-entity Producto {
-    +id: int <<PK>>
-    -nombre: string
-    -precio: float
-    -stock: int
-}
-
-entity Venta {
-    +id: int <<PK>>
-    -fecha: datetime
-    -total: float
-}
-
-entity venta_producto {
+entity "Producto" as producto {
     -id : int <<PK>>
-    -idVenta: int <<FK>>
-    -idProducto: int <<FK>>
-    -cantidad: int
+    --
+    *nombre : varchar(100)
+    *precio : integer(10)
+    *precio_compra : integer(10)
+    *fecha : timestamp
+    *stock : int
+    descripcion : varchar(500)
 }
 
-entity Deuda {
-    -id: int <<PK>>
-    -idVenta: int <<FK>>
-    -idDeudor: int <<FK>>
-    -monto: float
-    -fechaVencimiento: datetime
+entity "Cliente" as cliente {
+    -id : int <<PK>>
+    --
+    *nombre : varchar(100)
+    telefono : varchar(15)
 }
 
-' Relaciones con cardinalidad
-Deudor "1" -- "0..*" Venta : "Realiza"
-Producto "1" -- "1..*" venta_producto : "Contiene"
-Venta "1" -- "1..*" venta_producto : "Contiene"
-'Venta "1" -- "1..*" Producto : "Incluye"
-Deudor "1" -- "0..*" Deuda : "Genera"
-Deuda "0..1" -- "1" Venta : "Relacionada con"
-@enduml
+entity "Venta" as venta {
+    -id : int <<PK>>
+    --
+    *fecha : timestamp
+    *total : integer(10)
+    *ganancia : integer(10)
+}
+
+entity "VentasProductos" as ventas_productos {
+    -id : int <<PK>>
+    --
+    *id_venta : int <<FK>>
+    *id_producto : int <<FK>>
+    *cantidad : int
+}
+
+entity "Deuda" as deuda {
+    -id : int <<PK>>
+    --
+    *id_venta : int <<FK>>
+    *id_cliente : int <<FK>>
+    *monto_pendiente : integer(10)
+    *fecha_creacion : timestamp
+    *estado : ENUM('PENDIENTE', 'PAGADA')
+}
+
+entity "Abono" as abono {
+    -id : int <<PK>>
+    --
+    *id_deuda : int <<FK>>
+    *monto : integer(10)
+    *fecha_abono : timestamp
+}
+
+entity "Recordatorio" as recordatorio {
+    -id : int <<PK>>
+    --
+    *id_deuda : int <<FK>>
+    *mensaje : text
+    *fecha_programada : timestamp
+    *enviado : boolean
+    fecha_envio : timestamp
+}
+
+entity "Reporte" as reporte {
+    -id : int <<PK>>
+    --
+    *tipo : varchar(50)
+    *fecha_generacion : timestamp
+    *periodo : varchar(50)
+    *contenido : text
+    *formato : varchar(20)
+}
+
+' Relaciones
+venta ||--o{
+    ventas_productos : "contiene"
+    producto ||--o{
+        ventas_productos : "está en"
+        venta ||--o| deuda : "puede generar"
+        deuda ||--o{
+            abono : "recibe"
+            deuda ||--o{
+                recordatorio : "tiene"
+                cliente ||--o{
+                    deuda : "tiene"
+
+                    ' Notas explicativas
+                    note bottom of ventas_productos
+                        Tabla intermedia para la relación
+                        muchos a muchos entre VENTA y PRODUCTO
+                    end note
+
+                    note right of deuda
+                        Estado es un ENUM con valores:
+                        * PENDIENTE
+                        * PAGADA
+                    end note
+
+                    note right of cliente
+                        El teléfono es opcional
+                        para contacto en caso
+                        de tener deudas
+                    end note
+
+                    @enduml

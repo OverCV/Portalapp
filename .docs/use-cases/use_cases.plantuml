@@ -1,22 +1,64 @@
-@startuml
+@startuml Casos de uso
+left to right direction
 actor Vendedor
-' actor Cliente
-' actor Proveedor
 
-rectangle "PortalApp" {
-  usecase "Registrar Productos" as UC1
-  usecase "Consultar Productos" as UC2
-  usecase "Notificar de deudas" as UC3
-  usecase "Reporte financiero" as UC4
-  usecase "Registrar venta" as UC5
-  usecase "Consultar registro de ventas"  as UC6
+rectangle "Portalapp" {
+  package "Gestión de Productos" {
+    usecase "Gestionar Inventario" as CU02
+    usecase "Actualizar Stock" as CU02.1
+    usecase "Eliminar Producto" as CU02.2
+    usecase "Registrar Producto" as CU02.3
+  }
+
+  package "Gestión de Ventas" {
+    usecase "Procesar Venta" as CU01
+    usecase "Verificar Stock" as CU01.1
+    usecase "Registrar Venta" as CU01.2
+    usecase "Actualizar Stock" as CU01.3
+    usecase "Generar Deuda" as CU01.4
+  }
+
+  package "Gestión de Reportes" {
+    usecase "Generar Reportes" as CU04
+    usecase "Generar Reporte de Ventas" as CU04.1
+    usecase "Administrar Ventas" as CU04.3
+    usecase "Generar Reporte de Deudas" as CU04.2
+    usecase "Administrar Deudas" as CU04.4
+  }
+
+  package "Gestión de Deudas" {
+    usecase "Administrar Deudas" as CU03
+    usecase "Generar Deuda" as CU03.1
+    usecase "Abonar Deuda" as CU03.2
+    usecase "Crear Recordatorio" as CU03.3
+  }
+
+  ' Relaciones Gestión de Ventas
+  Vendedor -- CU01
+  CU01 ..> CU01.1 : <<include>>
+  CU01 ..> CU01.2 : <<include>>
+  CU01 ..> CU01.3 : <<include>>
+  CU01.2 ..> CU01.4 : <<extend>>
+
+  ' Relaciones Gestión de Productos
+  Vendedor -- CU02
+  CU02 ..> CU02.1 : <<include>>
+  CU02 ..> CU02.2 : <<include>>
+  CU02 ..> CU02.3 : <<include>>
+
+  ' Relaciones Gestión de Deudas
+  Vendedor -- CU03
+  CU03 ..> CU03.1 : <<include>>
+  CU03 ..> CU03.2 : <<include>>
+  CU03 ..> CU03.3 : <<include>>
+
+  ' Relaciones Gestión de Reportes
+  Vendedor -- CU04
+  CU04 ..> CU04.1 : <<include>>
+  CU04 ..> CU04.2 : <<include>>
+
+  CU04.1 ..> CU04.3 : <<extend>>
+  CU04.2 ..> CU04.4 : <<extend>>
 }
-
-Vendedor --- UC1 : "Gestionar Productos"
-Vendedor --- UC2 : "Gestionar Productos"
-Vendedor <-- UC3 : ""
-Vendedor <-- UC4 : ""
-Vendedor --- UC5 : "Registrar venta"
-Vendedor --- UC6 : "Gestionar deudores"
 
 @enduml
