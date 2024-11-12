@@ -2,7 +2,6 @@ import flet as fl
 from flet_core.types import AppView
 
 
-# from backend.api.enums.routes import Routes
 from frontend.app.portalapp import Portalapp
 from backend.constants.application import __MAIN__
 
