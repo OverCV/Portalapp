@@ -1,3 +1,1 @@
-id,nombre,precio,stock
-1,Agua,1200,0
-2,Mani,800,3
+id,nombre,precio,stock,imagen_ruta

@@ -17,6 +17,7 @@ entity "Producto" as producto {
     *fecha : timestamp
     *stock : int
     descripcion : varchar(500)
+    imagen_ruta : varchar(500)
 }
 
 entity "Cliente" as cliente {
@@ -106,4 +107,5 @@ note right of cliente
     de tener deudas
 end note
 
+@enduml
 @enduml
