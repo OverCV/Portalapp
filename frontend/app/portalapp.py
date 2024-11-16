@@ -8,7 +8,7 @@ from frontend.app.enums.app import AppLabels
 from backend.data.managers.csv_manager import CSVManager
 
 from frontend.home.view import mostrar_inicio
-from frontend.deudores.view import mostrar_deudores
+from frontend.deudas.view import mostrar_deudores
 from frontend.productos.view import mostrar_productos
 from frontend.ventas.view import mostrar_ventas
 

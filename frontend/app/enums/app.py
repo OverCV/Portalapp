@@ -4,6 +4,7 @@ class AppParams:
     APP_DESCRIPTION: str = 'App for managing products, sales, debtors and reports.'
     APP_VERSION: str = '1.0.0'
     APP_AUTHORS: str = 'Juan C. L. V. - Jhon E. R. L. - Seider S. G. - Over H. C. V.'
+    APP_ASSETS_PATH: str = 'frontend/data/assets'
 
 
 class AppRoutes:
