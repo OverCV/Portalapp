@@ -17,6 +17,7 @@ entity "Producto" as producto {
     *fecha : timestamp
     *stock : int
     descripcion : varchar(500)
+    imagen_ruta : varchar(500)
 }
 
 entity "Cliente" as cliente {
@@ -81,34 +82,29 @@ entity "Reporte" as reporte {
 }
 
 ' Relaciones
-venta ||--o{
-    ventas_productos : "contiene"
-    producto ||--o{
-        ventas_productos : "está en"
-        venta ||--o| deuda : "puede generar"
-        deuda ||--o{
-            abono : "recibe"
-            deuda ||--o{
-                recordatorio : "tiene"
-                cliente ||--o{
-                    deuda : "tiene"
+venta ||--o{     ventas_productos : "contiene"
+producto ||--o{         ventas_productos : "está en"
+venta ||--o| deuda : "puede generar"
+deuda ||--o{             abono : "recibe"
+deuda ||--o{                 recordatorio : "tiene"
+cliente ||--o{                     deuda : "tiene"
 
-                    ' Notas explicativas
-                    note bottom of ventas_productos
-                        Tabla intermedia para la relación
-                        muchos a muchos entre VENTA y PRODUCTO
-                    end note
+' Notas explicativas
+    note bottom of ventas_productos
+    Tabla intermedia para la relación
+    muchos a muchos entre VENTA y PRODUCTO
+    end note
 
-                    note right of deuda
-                        Estado es un ENUM con valores:
-                        * PENDIENTE
-                        * PAGADA
-                    end note
+    note right of deuda
+    Estado es un ENUM con valores:
+    * PENDIENTE
+    * PAGADA
+    end note
 
-                    note right of cliente
-                        El teléfono es opcional
-                        para contacto en caso
-                        de tener deudas
-                    end note
+    note right of cliente
+    El teléfono es opcional
+    para contacto en caso
+    de tener deudas
+    end note
 
-                    @enduml
+@enduml
