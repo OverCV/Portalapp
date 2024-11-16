@@ -1,0 +1,53 @@
+@startuml "Diagrama de flujo de productos"
+
+start
+:Usuario ingresa a Productos;
+if (Lista productos existentes?) then (Sí)
+  :Mostrar GridView de productos;
+else (No)
+  :Mostrar vista vacía;
+endif
+
+:Usuario selecciona acción;
+if (Buscar?) then (Sí)
+  :Filtrar productos por nombre;
+  :Mostrar GridView de productos;
+endif
+
+if (Agregar?) then (Sí)
+  :Abrir diálogo nuevo producto;
+  :Usuario ingresa datos;
+  if (Datos válidos?) then (Sí)
+    :Guardar producto;
+    :Mostrar GridView de productos;
+  else (No)
+    :Mostrar error;
+    :Volver a ingreso de datos;
+  endif
+endif
+
+if (Editar?) then (Sí)
+  :Abrir diálogo con datos;
+  :Usuario modifica datos;
+  if (Datos válidos?) then (Sí)
+    :Actualizar producto;
+    :Mostrar GridView de productos;
+  else (No)
+    :Mostrar error;
+    :Volver a modificación de datos;
+  endif
+endif
+
+if (Eliminar?) then (Sí)
+  :Mostrar confirmación;
+  if (Usuario confirma?) then (Sí)
+    :Eliminar producto;
+    :Mostrar GridView de productos;
+  else (No)
+    :Volver a GridView;
+  endif
+endif
+
+stop
+
+@enduml

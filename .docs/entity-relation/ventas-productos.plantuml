@@ -1,4 +1,4 @@
-@startuml "Diagrama Entidad Relación - Sistema Integrado"
+@startuml "Diagrama Entidad Relación - Sistema"
 
 skinparam linetype ortho
 skinparam class {
@@ -11,11 +11,9 @@ entity "Producto" as producto {
     -id : int <<PK>>
     --
     *nombre : varchar(100)
-    *precio : integer(10)
-    *precio_compra : integer(10)
-    *fecha : timestamp
+    *precio : int
     *stock : int
-    descripcion : varchar(500)
+    *coste : int
     imagen_ruta : varchar(500)
 }
 
@@ -23,8 +21,8 @@ entity "Venta" as venta {
     -id : int <<PK>>
     --
     *fecha : timestamp
-    *total : integer(10)
-    *ganancia : integer(10)
+    *total : int
+    *ganancia : int
 }
 
 entity "VentasProductos" as ventas_productos {
@@ -32,6 +30,7 @@ entity "VentasProductos" as ventas_productos {
     --
     *id_venta : int <<FK>>
     *id_producto : int <<FK>>
+    *fecha : timestamp
     *cantidad : int
 }
 
@@ -42,3 +41,5 @@ note bottom of ventas_productos
     Tabla intermedia para la relación
     muchos a muchos entre VENTA y PRODUCTO
 end note
+
+@enduml
