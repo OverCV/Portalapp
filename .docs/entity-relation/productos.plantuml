@@ -14,7 +14,7 @@ entity "Producto" as producto {
     *precio : integer(10)
     *fecha : timestamp
     *stock : int
-    descripcion : varchar(500)
+    ' descripcion : varchar(500)
     imagen_ruta : varchar(500)
     coste : integer(10)
 }

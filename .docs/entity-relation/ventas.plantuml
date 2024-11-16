@@ -1,0 +1,41 @@
+@startuml "Diagrama Entidad Relación - Ventas"
+
+skinparam linetype ortho
+skinparam class {
+    BackgroundColor White
+    ArrowColor Black
+    BorderColor Black
+}
+
+entity "Cliente" as cliente {
+    -id : int <<PK>>
+    --
+    *nombre : varchar(100)
+    telefono : varchar(15)
+}
+
+entity "Venta" as venta {
+    -id : int <<PK>>
+    --
+    *fecha : timestamp
+    *total : integer(10)
+    *ganancia : integer(10)
+}
+
+entity "VentasProductos" as ventas_productos {
+    -id : int <<PK>>
+    --
+    *id_venta : int <<FK>>
+    *id_producto : int <<FK>>
+    *cantidad : int
+}
+
+cliente ||--o{ venta : "realiza"
+venta ||--o{ ventas_productos : "contiene"
+
+note bottom of ventas_productos
+    Tabla intermedia para la relación
+    muchos a muchos entre VENTA y PRODUCTO
+end note
+
+@enduml

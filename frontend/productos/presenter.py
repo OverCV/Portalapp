@@ -35,7 +35,7 @@ class ProductosPresenter:
 
             precio_val = self.__validate_precio(precio)
             stock_val = self.__validate_stock(stock)
-            coste_val = int(coste)
+            coste_val = precio_val if coste == '' else int(coste)
 
             return True, Producto(
                 id=-1, nombre=nombre, precio=precio_val, coste=coste_val, stock=stock_val, imagen_ruta=imagen_ruta
