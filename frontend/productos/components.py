@@ -7,12 +7,31 @@ from frontend.app.enums.app import AppParams
 
 
 class ProductoCard(fl.Card):
+    """Representa una tarjeta visual para mostrar la información de un producto.
+
+    La tarjeta incluye detalles como el nombre, el precio, el stock y una imagen (si está disponible).
+    También incluye botones para editar y eliminar el producto.
+
+    Args:
+        producto (Producto): Objeto que contiene la información del producto (nombre, precio, stock, ruta de la imagen).
+        on_edit (Callable[[Producto], None]): Función de callback que se ejecuta al hacer clic en el botón de editar.
+        on_delete (Callable[[Producto], None]): Función de callback que se ejecuta al hacer clic en el botón de eliminar.
+    """
     def __init__(
         self,
         producto: Producto,
         on_edit: Callable[[Producto], None],
         on_delete: Callable[[Producto], None],
     ):
+        """Inicializa una instancia de ProductoCard con los datos del producto y callbacks.
+
+        La tarjeta ajusta dinámicamente su diseño dependiendo de si el producto incluye una ruta de imagen.
+
+        Args:
+            producto (Producto): Objeto que contiene la información del producto.
+            on_edit (Callable[[Producto], None]): Callback para manejar la acción de edición.
+            on_delete (Callable[[Producto], None]): Callback para manejar la acción de eliminación.
+        """
         super().__init__()
         self.content = fl.Container(
             content=(

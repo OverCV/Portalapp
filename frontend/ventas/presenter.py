@@ -13,18 +13,54 @@ from backend.models.deuda import Deuda
 
 @dataclass
 class ItemVenta:
-    """Clase auxiliar para manejar productos en la venta actual"""
+    """Clase auxiliar para manejar productos en la venta actual.
+
+    Esta clase representa un producto en una venta con su cantidad y el cálculo automático 
+    del total basado en el precio del producto y su cantidad.
+
+    Atributos:
+        producto (Producto): El objeto del producto asociado con esta venta.
+        cantidad (int): La cantidad del producto que se ha vendido.
+
+    Propiedades:
+        total (float): El total calculado como el precio del producto multiplicado por la cantidad.
+    """
 
     producto: Producto
     cantidad: int
 
     @property
-    def total(self) -> float:
+    def total(self) -> int:
+        """Calcula el total para este producto basado en su precio y cantidad.
+
+        Returns:
+         int: El total, que es el precio del producto multiplicado por la cantidad.
+        """
         return self.producto.precio * self.cantidad
 
 
 class VentasPresenter:
+    """Presenter que maneja la lógica de negocio para las ventas.
+
+    Esta clase se encarga de gestionar las interacciones entre la vista (UI) y el modelo de datos
+    relacionado con las ventas, como la gestión de productos, cantidades, y el cálculo de totales. 
+    Además, gestiona la creación de ventas y deudas, y actualiza la interfaz de usuario conforme 
+    se realizan las operaciones.
+
+    Atributos:
+        view: La vista asociada a la presentación de la venta.
+        data_manager: El gestor de datos que se encarga de interactuar con los datos (por ejemplo, CSVManager).
+        productos_venta (List[ItemVenta]): La lista de productos añadidos a la venta actual.
+        productos (List[Producto]): La lista de productos disponibles para la venta.
+        total_actual (float): El total acumulado de la venta actual.
+    """
     def __init__(self, view, data_manager):
+        """Inicializa el presenter de ventas.
+
+        Args:
+            view: La vista asociada a la presentación de la venta.
+            data_manager: El gestor de datos para obtener y guardar productos, ventas, etc.
+        """
         self.view = view
         self.data_manager: CSVManager = data_manager
         self.productos_venta: List[ItemVenta] = []
@@ -64,17 +100,32 @@ class VentasPresenter:
         self.productos = [p for p in self.productos if p.stock > 0]
 
     def filtrar_productos_con_stock(self) -> list[ft.dropdown.Option]:
-        """Crea las opciones del dropdown solo con productos que tienen stock"""
+        """Crea las opciones del dropdown solo con productos que tienen stock disponible.
+
+        Returns:
+            list[ft.dropdown.Option]: Lista de opciones de productos con stock.
+        """
         return [
             ft.dropdown.Option(key=str(p.id), text=p.nombre) for p in self.productos if p.stock > 0
         ]
 
     def _encontrar_producto(self, producto_id: int) -> Optional[Producto]:
-        """Busca un producto por su ID"""
+        """Busca un producto por su ID.
+
+        Args:
+            producto_id (int): El ID del producto a buscar.
+
+        Returns:
+            Optional[Producto]: El producto encontrado o None si no se encuentra.
+        """
         return next((p for p in self.productos if p.id == producto_id), None)
 
     def handle_producto_seleccionado(self, producto_id: str):
-        """Maneja la selección de un producto"""
+        """Maneja la selección de un producto en el dropdown y actualiza la venta.
+
+        Args:
+            producto_id (str): El ID del producto seleccionado.
+        """
         if not producto_id:
             return
 
@@ -101,7 +152,12 @@ class VentasPresenter:
         self._actualizar_vista()
 
     def modificar_cantidad(self, producto_id: int, delta: int):
-        """Modifica la cantidad de un producto en la venta"""
+        """Modifica la cantidad de un producto en la venta.
+
+        Args:
+            producto_id (int): El ID del producto a modificar.
+            delta (int): El cambio en la cantidad (positivo o negativo).
+        """
         producto_venta = next(
             (pv for pv in self.productos_venta if pv.producto.id == producto_id), None
         )
@@ -123,7 +179,14 @@ class VentasPresenter:
         self._actualizar_vista()
 
     def calcular_devolucion(self, monto: str):
-        """Calcula la devolución basada en el monto ingresado"""
+        """Calcula la devolución basada en el monto ingresado por el cliente.
+
+        Args:
+            monto (str): El monto pagado por el cliente como cadena.
+
+        Returns:
+            float: El monto de la devolución calculado.
+        """
         try:
             monto_pagado = float(monto or 0)
             devolucion = monto_pagado - self.total_actual
@@ -160,8 +223,11 @@ class VentasPresenter:
         self.view.page.update()
 
     def handle_vender(self, monto_pagado: float = 0):
-        """Procesa la venta actual"""
+        """Procesa la venta actual, incluyendo la validación del pago y creación de la venta.
 
+        Args:
+            monto_pagado (float): El monto pagado por el cliente.
+        """
         if not self.productos_venta:
             self.view.mostrar_error('No hay productos en la venta')
             return

@@ -12,12 +12,38 @@ from backend.models.producto import Producto
 
 
 def mostrar_productos(page: ft.Page, sql_manager: CSVManager) -> ft.View:
+    """Muestra la vista de productos inicializada.
+
+    Esta función crea una instancia de la vista de productos (`ProductosView`) y la devuelve. 
+    Es utilizada para mostrar la lista de productos en la página proporcionada, 
+    utilizando el administrador de datos proporcionado.
+
+    Args:
+        page (ft.Page): La página de Flet donde se renderiza la vista de productos.
+        sql_manager (CSVManager): El administrador de base de datos para gestionar los productos.
+
+    Returns:
+        ft.View: La vista de productos que contiene los controles para mostrar y gestionar los productos.
+    """
     view = ProductosView(page, sql_manager)
     return view.view  # Retornamos la vista inicializada
 
 
 class ProductosView:
+    """Representa la vista de productos, mostrando una lista de productos y proporcionando
+    la funcionalidad de búsqueda, agregar, editar y eliminar productos.
+
+    Args:
+        page (ft.Page): La página principal donde se renderiza la vista.
+        sql_manager (CSVManager): El administrador para manejar los datos de productos.
+    """
     def __init__(self, page: ft.Page, sql_manager: CSVManager):
+        """Inicializa la vista de productos, configurando el presentador y la interfaz de usuario.
+
+        Args:
+            page (ft.Page): La página donde se presentarán los datos.
+            sql_manager (CSVManager): El administrador para manejar los datos de productos.
+        """
         self.page = page
         self.presenter = ProductosPresenter(self, sql_manager)
         self.productos_list = ft.ListView(
@@ -26,6 +52,11 @@ class ProductosView:
         self.init_view()
 
     def init_view(self):
+        """Inicializa la vista, construyendo la interfaz de usuario y la funcionalidad de búsqueda.
+
+        Returns:
+            ft.View: La vista de la página con la lista de productos y los controles de búsqueda.
+        """
         self.view = ft.View(
             AppRoutes.PRODUCTOS,
             [
@@ -38,6 +69,11 @@ class ProductosView:
         return self.view
 
     def __build_app_bar(self):
+        """Construye la barra de aplicación con el título y el botón para agregar un nuevo producto.
+
+        Returns:
+            ft.AppBar: La barra de aplicación con las acciones configuradas.
+        """
         return ft.AppBar(
             title=ft.Text('Mis productos 📦'),
             center_title=True,
@@ -51,9 +87,19 @@ class ProductosView:
         )
 
     def handle_search(self, e):
+        """Maneja la acción de búsqueda de productos al cambiar el valor del campo de búsqueda.
+
+        Args:
+            e: El evento que contiene el nuevo valor de búsqueda.
+        """
         self.presenter.search_productos(e.control.value)
 
     def __build_content(self):
+        """Construye el contenido principal de la vista, incluyendo el campo de búsqueda y la lista de productos.
+
+        Returns:
+            ft.Container: El contenedor que incluye el campo de búsqueda y la lista de productos.
+        """
         return ft.Container(
             content=ft.Column(
                 [
@@ -77,6 +123,10 @@ class ProductosView:
         )
 
     def refresh_productos(self):
+        """Actualiza la lista de productos en la vista.
+
+        Obtiene los productos del presentador y los agrega a la lista de controles de la vista.
+        """
         productos = self.presenter.load_productos()
         self.productos_list.controls = [
             ProductoCard(p, on_edit=self.show_product_dialog, on_delete=self.handle_delete)
@@ -85,9 +135,19 @@ class ProductosView:
         self.page.update()
 
     def show_error(self, message: str):
+        """Muestra un mensaje de error en la vista.
+
+        Args:
+            message (str): El mensaje de error a mostrar.
+        """
         self.page.open(ft.SnackBar(content=ft.Text(message)))
 
     def handle_delete(self, producto: Producto):
+        """Maneja la acción de eliminar un producto, mostrando un cuadro de diálogo de confirmación.
+
+        Args:
+            producto (Producto): El producto que se desea eliminar.
+        """
         def confirm_delete(e):
             self.presenter.delete_producto(producto)
             dialog.open = False
@@ -115,6 +175,13 @@ class ProductosView:
         self.page.update()
 
     def show_product_dialog(self, producto: Producto = None):
+        """Muestra un cuadro de diálogo para agregar o editar un producto.
+
+        Si el producto es proporcionado, se editará. Si no, se agregará un nuevo producto.
+
+        Args:
+            producto (Producto, optional): El producto a editar. Si es None, se creará un nuevo producto.
+        """
         # Variable para almacenar la ruta de la imagen temporalmente
         imagen_seleccionada = None
 
