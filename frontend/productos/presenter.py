@@ -36,6 +36,7 @@ class ProductosPresenter:
             precio_val = self.__validate_precio(precio)
             stock_val = self.__validate_stock(stock)
             coste_val = self.__validate_coste(coste, precio_val)
+            self.__validate_imagen(imagen_ruta)
 
             return True, Producto(
                 id=-1, nombre=nombre, precio=precio_val, coste=coste_val, stock=stock_val, imagen_ruta=imagen_ruta
@@ -51,7 +52,13 @@ class ProductosPresenter:
                 raise ValueError()
             return precio_val
         except ValueError:
-            raise ValueError('Precio debe ser un número mayor a 0')
+            raise ValueError('Precio debe ser un número entero mayor a 0')
+
+    def __validate_imagen(self, imagen_ruta: str):
+        if imagen_ruta:
+            valid_extensions = ('.jpg', '.jpeg', '.png', '.gif', '.bmp')
+            if not imagen_ruta.lower().endswith(valid_extensions):
+                raise ValueError('La imagen debe ser un archivo con formato de imagen válido (jpg, jpeg, png, gif, bmp)')
 
     def __validate_stock(self, stock: str) -> int:
         try:
@@ -60,7 +67,7 @@ class ProductosPresenter:
                 raise ValueError()
             return stock_val
         except ValueError:
-            raise ValueError('Stock debe ser un número positivo')
+            raise ValueError('Stock debe ser un número entero positivo')
 
     def __validate_coste(self, coste: str, precio: int) -> int:
         try:
@@ -69,7 +76,7 @@ class ProductosPresenter:
                 raise ValueError()
             return coste_val
         except ValueError:
-            raise ValueError('Coste debe ser un número entre 0 y el precio')
+            raise ValueError('Coste debe ser un número entero entre 0 y el precio')
 
     def save_producto(
         self, nombre: str, precio: str, coste: str, stock: str, imagen_ruta: str = None, id_producto: int = None
