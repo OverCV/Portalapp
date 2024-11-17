@@ -35,7 +35,7 @@ class ProductosPresenter:
 
             precio_val = self.__validate_precio(precio)
             stock_val = self.__validate_stock(stock)
-            coste_val = precio_val if coste == '' else int(coste)
+            coste_val = self.__validate_coste(coste, precio_val)
 
             return True, Producto(
                 id=-1, nombre=nombre, precio=precio_val, coste=coste_val, stock=stock_val, imagen_ruta=imagen_ruta
@@ -61,6 +61,15 @@ class ProductosPresenter:
             return stock_val
         except ValueError:
             raise ValueError('Stock debe ser un número positivo')
+
+    def __validate_coste(self, coste: str, precio: int) -> int:
+        try:
+            coste_val = int(coste)
+            if coste_val < 0 or coste_val >= precio:
+                raise ValueError()
+            return coste_val
+        except ValueError:
+            raise ValueError('Coste debe ser un número entre 0 y el precio')
 
     def save_producto(
         self, nombre: str, precio: str, coste: str, stock: str, imagen_ruta: str = None, id_producto: int = None
