@@ -196,6 +196,7 @@ class VentasPresenter:
             return devolucion
         except ValueError:
             self.view.mostrar_error('El monto debe ser un número válido')
+            self.view.limpiar_formulario()
             return 0
 
     def _actualizar_vista(self):

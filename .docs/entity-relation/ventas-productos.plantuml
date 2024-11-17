@@ -1,0 +1,45 @@
+@startuml "Diagrama Entidad Relación - Sistema"
+
+skinparam linetype ortho
+skinparam class {
+    BackgroundColor White
+    ArrowColor Black
+    BorderColor Black
+}
+
+entity "Producto" as producto {
+    -id : int <<PK>>
+    --
+    *nombre : varchar(100)
+    *precio : int
+    *stock : int
+    *coste : int
+    imagen_ruta : varchar(500)
+}
+
+entity "Venta" as venta {
+    -id : int <<PK>>
+    --
+    *fecha : timestamp
+    *total : int
+    *ganancia : int
+}
+
+entity "VentasProductos" as ventas_productos {
+    -id : int <<PK>>
+    --
+    *id_venta : int <<FK>>
+    *id_producto : int <<FK>>
+    *fecha : timestamp
+    *cantidad : int
+}
+
+venta ||--o{ ventas_productos : "contiene"
+producto ||--o{ ventas_productos : "está en"
+
+note bottom of ventas_productos
+    Tabla intermedia para la relación
+    muchos a muchos entre VENTA y PRODUCTO
+end note
+
+@enduml
