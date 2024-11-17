@@ -19,7 +19,7 @@ def mostrar_productos(page: ft.Page, sql_manager: CSVManager) -> ft.View:
 class ProductosView:
     def __init__(self, page: ft.Page, sql_manager: CSVManager):
         self.page = page
-        self.presenter = ProductosPresenter(self, sql_manager)
+        self.presenter: ProductosPresenter = ProductosPresenter(self, sql_manager)
         self.productos_list = ft.ListView(
             expand=True,
         )
@@ -147,6 +147,11 @@ class ProductosView:
             value=str(producto.precio) if producto else '',
             keyboard_type=ft.KeyboardType.NUMBER,
         )
+        coste_field = ft.TextField(
+            label='Coste',
+            value=str(producto.coste) if producto else '',
+            keyboard_type=ft.KeyboardType.NUMBER,
+        )
         stock_field = ft.TextField(
             label='Stock',
             value=str(producto.stock) if producto else '',
@@ -158,6 +163,7 @@ class ProductosView:
             success = self.presenter.save_producto(
                 nombre_field.value,
                 precio_field.value,
+                coste_field.value,
                 stock_field.value,
                 imagen_seleccionada,  # Pasamos la imagen actual o la nueva
                 producto.id if producto else None,
@@ -195,6 +201,7 @@ class ProductosView:
                     ),
                     nombre_field,
                     precio_field,
+                    coste_field,
                     stock_field,
                 ],
                 tight=True,
