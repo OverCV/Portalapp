@@ -156,7 +156,7 @@ class ProductosPresenter:
         Returns:
             bool: True si la operación fue exitosa, False si falló.
         """
-        is_valid, nuevo_producto = self.validate_product(nombre, precio, stock, imagen_ruta)
+        is_valid, nuevo_producto = self.validate_product(nombre, precio, coste, stock, imagen_ruta)
         if not is_valid:
             return False
 
