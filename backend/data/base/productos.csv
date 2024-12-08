@@ -1,7 +1,5 @@
 id,nombre,precio,stock,coste,imagen_ruta
-1,Papitas,1200,2,0,
-2,Manzana,800,0,1200,
-3,Mani,600,12,1000,5f9c8f01-7414-42e7-906f-a87a331c9784.jpg
-4,Agua,1200,6,600,
-6,Pancillo,1200,4,1200,
-7,H2-OH,500,0,-5,
+1,platanitos,1600,0,1400,
+2,aros de limón ,400,1,250,
+3,bom bom,600,4,450,
+4,Agua H2-OH,1300,3,1000,63ed9804-0216-443c-b6b9-cb5a2663e819.jpg

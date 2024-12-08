@@ -54,9 +54,9 @@ class VentasView:
                             ft.Row(
                                 [
                                     self.venta_form.monto_input,
-                                    ft.Container(width=20),
+                                    ft.Container(width=5),
                                     self.venta_form.devolucion_text,
-                                ]
+                                ]   
                             ),
                             ft.Row(
                                 [self.venta_form.vender_button],
@@ -65,7 +65,7 @@ class VentasView:
                             ),
                         ]
                     ),
-                    padding=10,
+                    padding=2,
                 ),
             ],
         )

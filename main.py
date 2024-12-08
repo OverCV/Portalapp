@@ -1,3 +1,4 @@
+# main.py
 import flet as fl
 from flet_core.types import AppView
 
