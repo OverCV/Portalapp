@@ -8,15 +8,15 @@ from backend.app.enums.manager import CSVModels
 from datetime import datetime
 
 from backend.models.base_model import T
+from backend.models.deuda import Deuda
 from backend.models.producto import Producto
 from backend.models.venta_producto import VentaProducto
 from backend.models.deudor import Deudor
 from backend.models.venta import Venta
+from backend.models.abono import Abono
 
 
 from dataclasses import asdict, fields
-
-from icecream import ic
 
 
 class CSVManager:
@@ -32,7 +32,10 @@ class CSVManager:
         self.register_model(Producto, 'productos')
         self.register_model(VentaProducto, 'ventas_productos')
         self.register_model(Venta, 'ventas')
+        self.register_model(Deuda, 'deudas')
         self.register_model(Deudor, 'deudores')
+        self.register_model(Abono, 'abonos')
+
 
     def register_model(self, model_class: Type[T], file_name: str):
         """Registra un modelo para que sea manejado por CSVManager."""

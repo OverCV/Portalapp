@@ -1,5 +1,8 @@
 import flet as ft
+import flet as ft
 from backend.data.managers.csv_manager import CSVManager
+from backend.models.deudor import Deudor
+from frontend.deudores.presenter import DeudoresPresenter
 from backend.models.deudor import Deudor
 from frontend.deudores.presenter import DeudoresPresenter
 
