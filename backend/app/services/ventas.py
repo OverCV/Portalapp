@@ -1,62 +1,78 @@
-# backend/services/ventas.py
-
+# backend/app/services/ventas.py
 from datetime import datetime
-from backend.data.managers.csv_manager import CSVManager
+from typing import List, Dict, Any, Optional
+from backend.models.venta import Venta
 from backend.models.venta_producto import VentaProducto
 from backend.models.producto import Producto
-from backend.models.venta import Venta
-
-from backend.app.services.productos import put_producto, get_producto_by_id
-
-from icecream import ic
+from backend.models.deuda import Deuda
+from backend.models.deudor import Deudor  # Asegúrate de importar Deudor
+from backend.data.managers.csv_manager import CSVManager
 
 
-def get_ventas(data_manager: CSVManager):
-    return data_manager.get_data(Venta)
+class VentaService:
+    def __init__(self, data_manager: CSVManager):
+        self.data_manager = data_manager
 
+    def create_venta(
+        self,
+        productos: List[Dict[str, Any]],
+        monto_pagado: float,
+        deudor_info: Optional[Dict[str, str]] = None,
+    ) -> Venta:
+        # 1. Validar productos y stock
+        total_venta = 0
+        for prod_info in productos:
+            producto = self.data_manager.get_data_by_id(Producto, prod_info['id_producto'])
+            if not producto:
+                raise ValueError(f"Producto {prod_info['id_producto']} no existe")
+            if producto.stock < prod_info['cantidad']:
+                raise ValueError(f'Stock insuficiente para {producto.nombre}')
+            total_venta += producto.precio * prod_info['cantidad']
 
-def add_venta(
-    data_manager: CSVManager,
-    venta_productos: list[VentaProducto],
-) -> dict:
-    # Crear la venta principal
-    # venta_id = len(data_manager.get_data('ventas')) + 1
-    venta = Venta
-    venta.fecha = datetime.now().isoformat()
+        # 2. Validar monto si no es a crédito
+        if not deudor_info and monto_pagado < total_venta:
+            raise ValueError('Monto insuficiente')
 
-    # Guardar la venta en la base de datos
-    data_manager.add_data(Venta, venta)
-    last_venta: Venta = data_manager.get_data(Venta)[-1]
-    last_venta_id = last_venta.id
-
-    # Registrar cada producto de la venta en 'venta_productos' y actualizar stock
-    for venta_producto in venta_productos:
-        venta_producto.id_venta = last_venta_id
-        data_manager.add_data(VentaProducto, venta_producto)
-
-        # Actualizar el stock del producto
-        producto = get_producto_by_id(data_manager, venta_producto.id_producto)
-
-        producto_actualizado = Producto(
-            id=venta_producto.id_producto,
-            nombre=producto.nombre,
-            precio=producto.precio,
-            stock=producto.stock - venta_producto.cantidad,
+        # 3. Crear venta
+        venta = Venta(
+            id=-1, fecha=datetime.now(), ganancia=min(monto_pagado, total_venta), total=total_venta
         )
-        put_producto(data_manager, venta_producto.id_producto, producto_actualizado)
+        venta = self.data_manager.add_data(venta)
 
-    return venta
+        # 4. Registrar productos y actualizar stock
+        for prod_info in productos:
+            # Registrar venta-producto
+            venta_producto = VentaProducto(
+                id=-1,
+                id_venta=venta.id,
+                id_producto=prod_info['id_producto'],
+                cantidad=prod_info['cantidad'],
+                fecha=datetime.now(),
+            )
+            producto_guardado = self.data_manager.add_data(venta_producto)
 
+            # Actualizar stock
+            producto = self.data_manager.get_data_by_id(Producto, prod_info['id_producto'])
+            producto.stock -= prod_info['cantidad']
+            self.data_manager.put_data(Producto, producto.id, {'stock': producto.stock})
 
-def calcular_total_venta(data_manager: CSVManager, venta_productos: list[VentaProducto]) -> float:
-    """Calcula el total de la venta en base a la lista de productos."""
-    total: int = 0
-    for venta in venta_productos:
-        producto: Producto = data_manager.get_data_by_id(venta.id_producto)
-        total += producto.precio * venta.cantidad
-    return total
+        # 5. Crear deuda si aplica
+        if deudor_info:
+            # Crear o recuperar deudor
+            deudor = Deudor(
+                id=-1, nombre=deudor_info['nombre'], telefono=deudor_info.get('telefono')
+            )
+            deudor = self.data_manager.add_data(deudor)
 
+            deuda = Deuda(
+                id=-1,
+                id_venta=venta.id,
+                id_deudor=deudor.id,
+                valor_deuda=total_venta - monto_pagado,
+                creacion_deuda=datetime.now(),
+            )
+            self.data_manager.add_data(deuda)
 
-def filtrar_productos_con_stock(productos: list[Producto]) -> list[Producto]:
-    """Filtra productos con stock disponible."""
-    return [producto for producto in productos if int(producto.stock) > 0]
+        return venta
+
+    # Implementar otros métodos según sea necesario...

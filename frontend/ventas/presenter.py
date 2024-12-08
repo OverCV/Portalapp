@@ -1,90 +1,96 @@
-# frontend/ventas/presenter.py
 from datetime import datetime
 from dataclasses import dataclass
 from typing import Optional, List
 import flet as ft
 
 from backend.data.managers.csv_manager import CSVManager
+from backend.models.deudor import Deudor
 from backend.models.producto import Producto
 from backend.models.venta import Venta
-from backend.models.venta_producto import VentaProducto
-from backend.models.deuda import Deuda
+
+from backend.app.routes.productos import ProductoRoutes
+from backend.app.services.productos import ProductoService
+from backend.app.routes.ventas import VentaRoutes
+from backend.app.services.ventas import VentaService
 
 
 @dataclass
 class ItemVenta:
-    """Clase auxiliar para manejar productos en la venta actual.
-
-    Esta clase representa un producto en una venta con su cantidad y el cálculo automático 
-    del total basado en el precio del producto y su cantidad.
-
-    Atributos:
-        producto (Producto): El objeto del producto asociado con esta venta.
-        cantidad (int): La cantidad del producto que se ha vendido.
-
-    Propiedades:
-        total (float): El total calculado como el precio del producto multiplicado por la cantidad.
-    """
+    """Clase auxiliar para manejar productos en la venta actual"""
 
     producto: Producto
     cantidad: int
 
     @property
-    def total(self) -> int:
-        """Calcula el total para este producto basado en su precio y cantidad.
-
-        Returns:
-         int: El total, que es el precio del producto multiplicado por la cantidad.
-        """
+    def total(self) -> float:
         return self.producto.precio * self.cantidad
 
 
 class VentasPresenter:
-    """Presenter que maneja la lógica de negocio para las ventas.
-
-    Esta clase se encarga de gestionar las interacciones entre la vista (UI) y el modelo de datos
-    relacionado con las ventas, como la gestión de productos, cantidades, y el cálculo de totales. 
-    Además, gestiona la creación de ventas y deudas, y actualiza la interfaz de usuario conforme 
-    se realizan las operaciones.
-
-    Atributos:
-        view: La vista asociada a la presentación de la venta.
-        data_manager: El gestor de datos que se encarga de interactuar con los datos (por ejemplo, CSVManager).
-        productos_venta (List[ItemVenta]): La lista de productos añadidos a la venta actual.
-        productos (List[Producto]): La lista de productos disponibles para la venta.
-        total_actual (float): El total acumulado de la venta actual.
-    """
-    def __init__(self, view, data_manager):
-        """Inicializa el presenter de ventas.
-
-        Args:
-            view: La vista asociada a la presentación de la venta.
-            data_manager: El gestor de datos para obtener y guardar productos, ventas, etc.
-        """
+    def __init__(self, view, data_manager: CSVManager):
         self.view = view
-        self.data_manager: CSVManager = data_manager
         self.productos_venta: List[ItemVenta] = []
-        self.productos: List[Producto] = []
         self.total_actual = 0.0
 
-        # Cargar productos iniciales
-        self.cargar_productos()
+        # Inicializar servicios
+        self.venta_service = VentaService(data_manager)
+        self.producto_service = ProductoService(data_manager)
 
-        # Configurar diálogo de deuda
+        # Inicializar rutas
+        self.venta_routes = VentaRoutes(self.venta_service)
+        self.producto_routes = ProductoRoutes(self.producto_service)
+
+        # Cargar productos iniciales
+        self.productos = self.producto_routes.get_productos_disponibles()
+
+        # Cargar los deudores existentes
+        self.deudores: list[Deudor] = data_manager.get_data(Deudor)
+
+        self.indice_deudor: Deudor | None = None
+
+        # Inicializar diálogo de deuda
         self._init_deuda_dialog()
 
     def _init_deuda_dialog(self):
         """Inicializa el diálogo de deuda"""
-        self.nombre_input = ft.TextField(label='Nombre del Cliente', width=200)
-        self.telefono_input = ft.TextField(label='Teléfono (opcional)', width=200)
+        # Inicializamos el estado de búsqueda
+        self.busqueda_activa = True
 
+        # Creando el input de nombre usando AutoComplete (por defecto)
+        self.nombre_input = ft.AutoComplete(
+            suggestions=[
+                ft.AutoCompleteSuggestion(key=deudor.nombre, value=deudor.nombre)
+                for deudor in self.deudores
+            ],
+            on_select=lambda e: self.set_deudor_seleccionado(e.control),
+        )
+
+        # Creando el input de teléfono usando AutoComplete
+        self.telefono_input = ft.TextField(label='Teléfono', width=200)
+
+        # Botón de búsqueda o agregar nuevo deudor
+        self.buscar_icon = ft.IconButton(
+            ft.icons.ADD,  # ícono de añadir por defecto
+            width=40,
+            height=40,
+            on_click=self.toggle_busqueda,
+        )
+
+        # Crear el diálogo de deuda
         self.deuda_dialog = ft.AlertDialog(
             title=ft.Text('Generar deuda'),
             content=ft.Column(
                 [
                     ft.Text('El monto ingresado es insuficiente para realizar la venta.'),
-                    self.nombre_input,
-                    self.telefono_input,
+                    # Primera fila con el nombre_input y el botón de búsqueda
+                    ft.Row(
+                        [
+                            ft.Column([self.nombre_input], width=200),
+                            ft.Column([self.buscar_icon], width=80),
+                        ],
+                    ),
+                    # Segunda fila con teléfono_input
+                    ft.Row([ft.Column([self.telefono_input], width=200)]),
                 ],
                 tight=True,
             ),
@@ -94,42 +100,62 @@ class VentasPresenter:
             ],
         )
 
-    def cargar_productos(self):
-        """Obtiene los productos disponibles del data manager"""
-        self.productos = self.data_manager.get_data(Producto)
-        self.productos = [p for p in self.productos if p.stock > 0]
+    def toggle_busqueda(self, e):
+        """Alterna entre búsqueda y agregar nuevo deudor"""
+        self.busqueda_activa = not self.busqueda_activa
+        if self.busqueda_activa:
+            # Cambiar a búsqueda (AutoComplete)
+            self.nombre_input = ft.AutoComplete(
+                suggestions=[
+                    ft.AutoCompleteSuggestion(key=deudor.nombre, value=deudor.nombre)
+                    for deudor in self.deudores
+                ],
+                on_select=lambda e: self.set_deudor_seleccionado(e.control),
+            )
+            self.buscar_icon.icon = ft.icons.ADD  # Cambiar el ícono a lupa
+        else:
+            # Cambiar a agregar nuevo deudor (TextField)
+            self.nombre_input = ft.TextField(label='Nombre del Deudor', width=200)
+            self.buscar_icon.icon = ft.icons.SEARCH  # Cambiar el ícono a "+"
 
-    def filtrar_productos_con_stock(self) -> list[ft.dropdown.Option]:
-        """Crea las opciones del dropdown solo con productos que tienen stock disponible.
+        # Volver a renderizar el diálogo
+        self.deuda_dialog.content = self._get_deuda_dialog_content()
+        self.view.page.update()
 
-        Returns:
-            list[ft.dropdown.Option]: Lista de opciones de productos con stock.
-        """
+    def _get_deuda_dialog_content(self):
+        """Genera el contenido del diálogo de deuda basado en el estado actual"""
+        return ft.Column(
+            [
+                ft.Text('El monto ingresado es insuficiente para realizar la venta.'),
+                # Primera fila con nombre_input y botón de búsqueda
+                ft.Row(
+                    [
+                        ft.Column([self.nombre_input], width=200),
+                        ft.Column([self.buscar_icon], width=80),
+                    ],
+                ),
+                # Segunda fila con teléfono_input
+                ft.Row([ft.Column([self.telefono_input], width=200)]),
+            ],
+            tight=True,
+        )
+
+    def set_deudor_seleccionado(self, datos_deudor: ft.AutoComplete):
+        print(datos_deudor)
+        print(datos_deudor.data)
+        self.indice_deudor = datos_deudor.selected_index
+
+    def filtrar_productos_con_stock(self) -> List[ft.dropdown.Option]:
+        """Crea las opciones del dropdown solo con productos que tienen stock"""
         return [
             ft.dropdown.Option(key=str(p.id), text=p.nombre) for p in self.productos if p.stock > 0
         ]
 
-    def _encontrar_producto(self, producto_id: int) -> Optional[Producto]:
-        """Busca un producto por su ID.
-
-        Args:
-            producto_id (int): El ID del producto a buscar.
-
-        Returns:
-            Optional[Producto]: El producto encontrado o None si no se encuentra.
-        """
-        return next((p for p in self.productos if p.id == producto_id), None)
-
     def handle_producto_seleccionado(self, producto_id: str):
-        """Maneja la selección de un producto en el dropdown y actualiza la venta.
-
-        Args:
-            producto_id (str): El ID del producto seleccionado.
-        """
         if not producto_id:
             return
 
-        producto = self._encontrar_producto(int(producto_id))
+        producto = next((p for p in self.productos if p.id == int(producto_id)), None)
         if not producto:
             return
 
@@ -139,25 +165,18 @@ class VentasPresenter:
         )
 
         if producto_venta:
-            # Verificar stock antes de incrementar
             if producto_venta.cantidad < producto.stock:
                 producto_venta.cantidad += 1
             else:
                 self.view.mostrar_error(f'Stock insuficiente para {producto.nombre}')
                 return
         else:
-            # Añadir nuevo producto a la venta
             self.productos_venta.append(ItemVenta(producto=producto, cantidad=1))
 
         self._actualizar_vista()
 
     def modificar_cantidad(self, producto_id: int, delta: int):
-        """Modifica la cantidad de un producto en la venta.
-
-        Args:
-            producto_id (int): El ID del producto a modificar.
-            delta (int): El cambio en la cantidad (positivo o negativo).
-        """
+        """Modifica la cantidad de un producto en la venta"""
         producto_venta = next(
             (pv for pv in self.productos_venta if pv.producto.id == producto_id), None
         )
@@ -179,14 +198,7 @@ class VentasPresenter:
         self._actualizar_vista()
 
     def calcular_devolucion(self, monto: str):
-        """Calcula la devolución basada en el monto ingresado por el cliente.
-
-        Args:
-            monto (str): El monto pagado por el cliente como cadena.
-
-        Returns:
-            float: El monto de la devolución calculado.
-        """
+        """Calcula la devolución basada en el monto ingresado"""
         try:
             monto_pagado = float(monto or 0)
             devolucion = monto_pagado - self.total_actual
@@ -224,79 +236,36 @@ class VentasPresenter:
         self.view.page.update()
 
     def handle_vender(self, monto_pagado: float = 0):
-        """Procesa la venta actual, incluyendo la validación del pago y creación de la venta.
-
-        Args:
-            monto_pagado (float): El monto pagado por el cliente.
-        """
         if not self.productos_venta:
             self.view.mostrar_error('No hay productos en la venta')
             return
 
         try:
-            # 1. Convertir total_actual a float si no lo es
-            total_float = float(self.total_actual)
-            # 2. Redondear el float
-            total_redondeado = round(total_float)
-            # 3. Convertir a entero
-            total_venta = int(total_redondeado)
-            # Mismo proceso para monto_pagado
-            monto_float = float(monto_pagado)
-            monto_redondeado = round(monto_float)
-            monto_pagado_redondeado = int(monto_redondeado)
-            # Calcular ganancia
-            ganancia = min(monto_pagado_redondeado, total_venta)
-            # Verificar si el monto es insuficiente
-            if monto_pagado < total_venta:
+            if monto_pagado < self.total_actual:
                 self._mostrar_dialog_deuda()
                 return
 
-            # Crear la venta con total y ganancia
-            venta = Venta(
-                id=-1,
-                fecha=datetime.now().isoformat(),
-                total=total_venta,
-                ganancia=ganancia,
-            )
+            productos = [
+                {'id_producto': item.producto.id, 'cantidad': item.cantidad}
+                for item in self.productos_venta
+            ]
 
-            venta = self.data_manager.add_data(venta)
+            self.venta_routes.create_venta({'productos': productos, 'monto_pagado': monto_pagado})
 
-            # Registrar productos y actualizar stock
-            productos_actualizados = False
-            for producto_venta in self.productos_venta:
-                # Registrar venta-producto
-                venta_producto = VentaProducto(
-                    id=-1,
-                    id_venta=venta.id,
-                    id_producto=producto_venta.producto.id,
-                    cantidad=producto_venta.cantidad,
-                    fecha=datetime.now().isoformat(),
-                )
+            # Recargar productos para tener el stock actualizado
+            self.productos = self.producto_routes.get_productos_disponibles()
 
-                self.data_manager.add_data(venta_producto)
-
-                # Actualizar stock
-                producto = producto_venta.producto
-                producto.stock -= producto_venta.cantidad
-
-                self.data_manager.put_data(Producto, producto.id, {'stock': producto.stock})
-                if producto.stock == 0:
-                    productos_actualizados = True
-
-            # Limpiar estado
+            # Limpiar estado y UI
             self.productos_venta.clear()
-
-            # Recargar productos y actualizar UI
-            if productos_actualizados:
-                self.cargar_productos()  # Esto actualizará la lista de productos disponibles
-
             self._actualizar_vista()
             self.view.limpiar_formulario()
             self.view.mostrar_error('Venta registrada correctamente')
 
+        except ValueError as e:
+            self.view.mostrar_error(str(e))
         except Exception as e:
-            error_msg = f'Error al procesar la venta: {str(e)}'
-            self.view.mostrar_error(error_msg)
+            print(e)
+            self.view.mostrar_error(f'Error al procesar la venta: {str(e)}')
 
     def _mostrar_dialog_deuda(self):
         """Muestra el diálogo para crear una deuda"""
@@ -306,62 +275,50 @@ class VentasPresenter:
 
     def _confirmar_deuda(self, e):
         """Procesa la confirmación de una deuda"""
-        nombre_cliente = self.nombre_input.value.strip()
-        telefono_cliente = self.telefono_input.value.strip()
+        if self.busqueda_activa:
+            # Si es búsqueda, se usa el AutoComplete para seleccionar
+            if self.indice_deudor is None:
+                # Mostrar un error si no se seleccionó un deudor
+                self.view.show_error('Por favor, seleccione un deudor.')
+                return
+            nombre_deudor = self.deudores[self.indice_deudor].nombre
+            telefono_deudor = self.deudores[self.indice_deudor].telefono
+        else:
+            # Si no es búsqueda, se usa el TextField para agregar un nuevo deudor
+            nombre_deudor = self.nombre_input.value.strip()
+            telefono_deudor = self.telefono_input.value.strip()
+            # Guardar nuevo deudor en el sistema
+            nuevo_deudor = Deudor(id=-1, nombre=nombre_deudor, telefono=telefono_deudor)
+            self.deudores.append(nuevo_deudor)
+            self.view.mostrar_error(f'Nuevo deudor agregado: {nombre_deudor}')
 
-        if not nombre_cliente:
+        if not nombre_deudor:
             self.view.mostrar_error('El nombre del cliente es obligatorio')
             return
 
         try:
-            # Primero creamos la venta
-            total_venta = int(self.total_actual)
-            monto_pagado = 0  # En caso de deuda, iniciamos con 0 pagado
+            # Preparar datos
+            productos = [
+                {'id_producto': item.producto.id, 'cantidad': item.cantidad}
+                for item in self.productos_venta
+            ]
 
-            venta = Venta(
-                id=-1,
-                fecha=datetime.now().isoformat(),
-                total=total_venta,
-                ganancia=monto_pagado,  # La ganancia inicial es 0
+            # Crear venta a crédito
+            self.venta_routes.create_venta(
+                {
+                    'productos': productos,
+                    'monto_pagado': 0,
+                    'deudor_info': {
+                        'nombre': nombre_deudor,
+                        'telefono': telefono_deudor,
+                    },
+                }
             )
-            venta = self.data_manager.add_data(venta)
-
-            # Registrar productos y actualizar stock
-            for producto_venta in self.productos_venta:
-                venta_producto = VentaProducto(
-                    id=-1,
-                    id_venta=venta.id,
-                    id_producto=producto_venta.producto.id,
-                    cantidad=producto_venta.cantidad,
-                )
-                self.data_manager.add_data(venta_producto)
-
-                # Actualizar stock
-                producto = producto_venta.producto
-                producto.stock -= producto_venta.cantidad
-                self.data_manager.put_data(Producto, producto.id, {'stock': producto.stock})
-
-            # Crear la deuda asociada a la venta
-            deuda = Deuda(
-                id=-1,
-                id_venta=venta.id,
-                id_deudor=-1,  # TODO: Implementar sistema de deudores
-                valor_deuda=total_venta,
-                # El valor de la deuda es el total de la venta
-                creacion_deuda=datetime.now().isoformat(),
-                # Convertir a ISO string para consistencia
-            )
-
-            # Guardar la deuda
-            self.data_manager.add_data(deuda)
 
             # Limpiar estado y UI
             self.productos_venta.clear()
-            self.cargar_productos()
             self._actualizar_vista()
             self.view.limpiar_formulario()
-
-            # Cerrar diálogo y mostrar confirmación
             self._cerrar_dialog()
             self.view.mostrar_error('Venta a crédito registrada correctamente')
 
