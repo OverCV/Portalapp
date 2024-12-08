@@ -1,29 +1,29 @@
-# backend/routes/ventas.py
-
-from backend.data.managers.csv_manager import CSVManager
-from backend.models.producto import Producto
-from backend.models.venta_producto import VentaProducto
-
-from backend.app.services.ventas import (
-    add_venta,
-    get_ventas,
-    calcular_total_venta,
-    filtrar_productos_con_stock,
-)
+# backend/app/routes/ventas.py
+from typing import List, Dict, Any
+from backend.models.venta import Venta
+from backend.app.services.ventas import VentaService
 
 
-def registrar_venta(data_manager: CSVManager, venta_productos: list[VentaProducto]):
-    """Función que maneja el registro de una venta completa."""
-    return add_venta(data_manager, venta_productos)
+class VentaRoutes:
+    def __init__(self, service: VentaService):
+        self.service = service
 
+    def create_venta(self, data: Dict[str, Any]) -> Venta:
+        """Endpoint para crear una venta"""
+        return self.service.create_venta(
+            productos=data['productos'],
+            monto_pagado=data['monto_pagado'],
+            deudor_info=data.get('deudor_info'),  # Añadimos esto para ventas a crédito
+        )
 
-def obtener_ventas(data_manager: CSVManager):
-    return get_ventas(data_manager)
+    def get_ventas(self) -> List[Venta]:
+        """Endpoint para obtener todas las ventas"""
+        return self.service.get_ventas()
 
+    def get_venta(self, venta_id: int) -> Venta:
+        """Endpoint para obtener una venta específica"""
+        return self.service.get_venta(venta_id)
 
-def obtener_total_venta(data_manager: CSVManager, venta_productos: list[VentaProducto]):
-    return calcular_total_venta(data_manager, venta_productos)
-
-
-def obtener_productos_disponibles(productos: list[Producto]) -> list[Producto]:
-    return filtrar_productos_con_stock(productos)
+    def update_venta(self, venta_id: int, data: Dict[str, Any]) -> Venta:
+        """Endpoint para actualizar una venta"""
+        return self.service.update_venta(venta_id, data)
