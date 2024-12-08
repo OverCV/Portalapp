@@ -59,7 +59,7 @@ sequenceDiagram
     Usuario->>VentaForm: Click en Vender
     VentaForm->>VentasPresenter: handle_vender()
     activate VentasPresenter
-    
+
     alt Monto Suficiente
         VentasPresenter->>CSVManager: add_data(Venta)
         CSVManager-->>VentasPresenter: venta
