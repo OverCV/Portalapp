@@ -17,6 +17,7 @@ class ProductoCard(fl.Card):
         on_edit (Callable[[Producto], None]): Función de callback que se ejecuta al hacer clic en el botón de editar.
         on_delete (Callable[[Producto], None]): Función de callback que se ejecuta al hacer clic en el botón de eliminar.
     """
+
     def __init__(
         self,
         producto: Producto,

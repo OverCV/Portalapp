@@ -8,11 +8,33 @@ from frontend.deudores.presenter import DeudoresPresenter
 
 
 def mostrar_deudores(page: ft.Page, data_manager: CSVManager) -> ft.View:
+    """Función principal para mostrar la vista de deudores.
+
+    Esta función inicializa y construye la vista principal de deudores
+    utilizando Flet.
+
+    Args:
+        page (ft.Page): Instancia de la página de Flet donde se mostrará la vista.
+        data_manager (CSVManager): Instancia del manejador de datos CSV.
+
+    Returns:
+        ft.View: Vista construida con la lista de deudores.
+    """
     view = DeudoresView(page, data_manager)
     return view.build()
 
 
 class DeudoresView:
+    """Clase que implementa la vista de deudores con Flet.
+
+    Esta clase maneja la interfaz gráfica para mostrar y gestionar deudores,
+    incluyendo sus deudas y abonos.
+
+    Args:
+        page (ft.Page): Instancia de la página de Flet.
+        data_manager (CSVManager): Manejador de datos CSV.
+    """
+
     def __init__(self, page: ft.Page, data_manager: CSVManager):
         self.page = page
         self.presenter = DeudoresPresenter(self, data_manager)
@@ -20,6 +42,11 @@ class DeudoresView:
         self.init_view()
 
     def mostrar_modal_deudas(self, deudor_id: int):
+        """Muestra un diálogo modal con el detalle de deudas de un deudor.
+
+        Args:
+            deudor_id (int): Identificador único del deudor.
+        """
         deudas = self.presenter.obtener_deudas_de_deudor(deudor_id)
         contenido = ft.Column(
             [
@@ -40,6 +67,11 @@ class DeudoresView:
         self.page.update()
 
     def abrir_modal_abono_deudor(self, deudor_id: int):
+        """Abre un diálogo modal para registrar un abono de un deudor.
+
+        Args:
+            deudor_id (int): Identificador único del deudor.
+        """
         input_abono = ft.TextField(label='Ingrese el monto del abono', keyboard_type='number')
 
         def confirmar_abono(e):
@@ -63,12 +95,21 @@ class DeudoresView:
         self.page.update()
 
     def cerrar_dialogo(self):
+        """Cierra el diálogo modal actualmente abierto."""
         if self.page.dialog:
             self.page.dialog.open = False
             self.page.dialog = None
             self.page.update()
 
     def crear_panel_deudor(self, deudor: Deudor):
+        """Crea un panel expansible con la información de un deudor.
+
+        Args:
+            deudor (Deudor): Instancia del modelo Deudor con la información.
+
+        Returns:
+            ft.ExpansionPanel: Panel expansible con los datos del deudor.
+        """
         saldo_total = self.presenter.saldo_de_deudor(deudor.id)
         abonos_de_deudor = self.presenter.obtener_abonos_de_deudor(deudor.id)
 
@@ -143,6 +184,7 @@ class DeudoresView:
         )
 
     def init_view(self):
+        """Inicializa la vista cargando todos los deudores con deuda activa."""
         self.deudores_list.controls.clear()
         deudores = self.presenter.obtener_deudores_con_deuda()
         panel_list = ft.ExpansionPanelList(
@@ -153,6 +195,11 @@ class DeudoresView:
         self.page.update()
 
     def build(self):
+        """Construye y retorna la vista principal de deudores.
+
+        Returns:
+            ft.View: Vista completa de deudores con su AppBar y lista.
+        """
         return ft.View(
             '/deudores',
             [
@@ -170,5 +217,6 @@ class DeudoresView:
         )
 
     def actualizar_vista(self):
+        """Actualiza la vista recargando los datos de deudores."""
         self.init_view()
         self.page.update()
