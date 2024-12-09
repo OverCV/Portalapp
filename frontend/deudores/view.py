@@ -1,3 +1,4 @@
+# frontend\deudores\view.py
 import flet as ft
 import flet as ft
 from backend.data.managers.csv_manager import CSVManager
