@@ -12,11 +12,12 @@ class ProductosPresenter:
     Esta clase actúa como el intermediario entre la vista (UI) y el backend
     (administrado por `CSVManager` en este caso). Se encarga de cargar, filtrar,
     validar, guardar y eliminar productos.
-    
+
     Args:
         view (fl.View): La vista que presenta los datos al usuario.
         sql_manager (CSVManager): Administrador para interactuar con la base de datos (en este caso, CSV).
     """
+
     def __init__(self, view: fl.View, sql_manager: CSVManager):
         """Inicializa el presentador con la vista y el administrador SQL.
 
@@ -66,7 +67,7 @@ class ProductosPresenter:
             imagen_ruta (str, optional): Ruta a la imagen del producto. Por defecto, None.
 
         Returns:
-            tuple[bool, Optional[Producto]]: 
+            tuple[bool, Optional[Producto]]:
                 - Un booleano indicando si la validación fue exitosa.
                 - El objeto `Producto` validado o None si falló.
         """
@@ -80,7 +81,12 @@ class ProductosPresenter:
             self.__validate_imagen(imagen_ruta)
 
             return True, Producto(
-                id=-1, nombre=nombre, precio=precio_val, coste=coste_val, stock=stock_val, imagen_ruta=imagen_ruta
+                id=-1,
+                nombre=nombre,
+                precio=precio_val,
+                coste=coste_val,
+                stock=stock_val,
+                imagen_ruta=imagen_ruta,
             )
         except ValueError as e:
             self.__view.show_error(str(e))
@@ -110,7 +116,9 @@ class ProductosPresenter:
         if imagen_ruta:
             valid_extensions = ('.jpg', '.jpeg', '.png', '.gif', '.bmp')
             if not imagen_ruta.lower().endswith(valid_extensions):
-                raise ValueError('La imagen debe ser un archivo con formato de imagen válido (jpg, jpeg, png, gif, bmp)')
+                raise ValueError(
+                    'La imagen debe ser un archivo con formato de imagen válido (jpg, jpeg, png, gif, bmp)'
+                )
 
     def __validate_stock(self, stock: str) -> int:
         """Valida que el stock sea un número entero no negativo.
@@ -142,7 +150,13 @@ class ProductosPresenter:
             raise ValueError('Coste debe ser un número entero entre 0 y el precio')
 
     def save_producto(
-        self, nombre: str, precio: str, coste: str, stock: str, imagen_ruta: str = None, id_producto: int = None
+        self,
+        nombre: str,
+        precio: str,
+        coste: str,
+        stock: str,
+        imagen_ruta: str = None,
+        id_producto: int = None,
     ) -> bool:
         """Guarda o actualiza un producto en la base de datos.
 
@@ -156,7 +170,7 @@ class ProductosPresenter:
         Returns:
             bool: True si la operación fue exitosa, False si falló.
         """
-        is_valid, nuevo_producto = self.validate_product(nombre, precio, stock, imagen_ruta)
+        is_valid, nuevo_producto = self.validate_product(nombre, precio, coste, stock, imagen_ruta)
         if not is_valid:
             return False
 

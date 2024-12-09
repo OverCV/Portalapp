@@ -15,7 +15,7 @@ class VentasView:
     """Vista para la gestión de ventas.
 
     Esta clase representa la interfaz de usuario para el proceso de registro de ventas,
-    incluyendo la selección de productos, el cálculo de montos y devoluciones, y la 
+    incluyendo la selección de productos, el cálculo de montos y devoluciones, y la
     finalización de la venta.
 
     Atributos:
@@ -24,6 +24,7 @@ class VentasView:
         venta_list (VentaList): Componente que muestra la lista de productos en venta.
         venta_form (VentaForm): Componente que permite ingresar la información de la venta.
     """
+
     def __init__(self, page: ft.Page, data_manager):
         """Inicializa la vista de ventas.
 
@@ -80,7 +81,7 @@ class VentasView:
                             ft.Row(
                                 [
                                     self.venta_form.monto_input,
-                                    ft.Container(width=20),
+                                    ft.Container(width=5),
                                     self.venta_form.devolucion_text,
                                 ]
                             ),
@@ -91,7 +92,7 @@ class VentasView:
                             ),
                         ]
                     ),
-                    padding=10,
+                    padding=2,
                 ),
             ],
         )

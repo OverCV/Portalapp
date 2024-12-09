@@ -12,6 +12,7 @@ class AppRoutes:
     PRODUCTOS: str = '/productos'
     VENTAS: str = '/ventas'
     DEUDORES: str = '/deudores'
+    DEUDAS: str = '/deudas'
     REPORTES: str = '/reportes'
     NOT_FOUND: str = '/404'
 
@@ -20,6 +21,7 @@ class AppLabels:
     HOME: str = 'Inicio'
     PRODUCTOS: str = 'Productos'
     VENTAS: str = 'Ventas'
+    DEUDAS: str = 'Deudas'
     DEUDORES: str = 'Deudores'
     REPORTES: str = 'Reportes'
     NOT_FOUND: str = 'Página no encontrada'

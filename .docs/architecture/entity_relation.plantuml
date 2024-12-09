@@ -20,7 +20,7 @@ entity "Producto" as producto {
     imagen_ruta : varchar(500)
 }
 
-entity "Cliente" as cliente {
+entity "Deudor" as deudor {
     -id : int <<PK>>
     --
     *nombre : varchar(100)
@@ -47,16 +47,16 @@ entity "Deuda" as deuda {
     -id : int <<PK>>
     --
     *id_venta : int <<FK>>
-    *id_cliente : int <<FK>>
-    *monto_pendiente : integer(10)
-    *fecha_creacion : timestamp
-    *estado : ENUM('PENDIENTE', 'PAGADA')
+    *id_deudor : int <<FK>>
+    *valor_deuda : integer(10)
+    *creacion_deuda : timestamp
+    ' *estado : ENUM('PENDIENTE', 'PAGADA')
 }
 
 entity "Abono" as abono {
     -id : int <<PK>>
     --
-    *id_deuda : int <<FK>>
+    *id_deudor : int <<FK>>
     *monto : integer(10)
     *fecha_abono : timestamp
 }
@@ -71,7 +71,7 @@ entity "Recordatorio" as recordatorio {
     fecha_envio : timestamp
 }
 
-entity "Reporte" as reporte {
+/' entity "Reporte" as reporte {
     -id : int <<PK>>
     --
     *tipo : varchar(50)
@@ -79,15 +79,15 @@ entity "Reporte" as reporte {
     *periodo : varchar(50)
     *contenido : text
     *formato : varchar(20)
-}
+} '/
 
 ' Relaciones
 venta ||--o{ ventas_productos : "contiene"
 producto ||--o{ ventas_productos : "está en"
 venta ||--o| deuda : "puede generar"
-deuda ||--o{ abono : "recibe"
+deudor ||--o{ abono : "recibe"
 deuda ||--o{ recordatorio : "tiene"
-cliente ||--o{ deuda : "tiene"
+deudor ||--o{ deuda : "tiene"
 
 ' Notas explicativas
 note bottom of ventas_productos
@@ -95,13 +95,13 @@ note bottom of ventas_productos
     muchos a muchos entre VENTA y PRODUCTO
 end note
 
-note right of deuda
-    Estado es un ENUM con valores:
-    * PENDIENTE
-    * PAGADA
-end note
+' note right of deuda
+'     Estado es un ENUM con valores:
+'     * PENDIENTE
+'     * PAGADA
+' end note
 
-note right of cliente
+note right of deudor
     El teléfono es opcional
     para contacto en caso
     de tener deudas

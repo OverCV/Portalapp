@@ -5,8 +5,8 @@ import flet as ft
 class VentaList:
     """Lista de productos en una venta, mostrando nombre, cantidad y total.
 
-    Esta clase gestiona la visualización de una lista de productos vendidos en una venta, 
-    permitiendo actualizar la cantidad de productos, calcular el total y gestionar interacciones 
+    Esta clase gestiona la visualización de una lista de productos vendidos en una venta,
+    permitiendo actualizar la cantidad de productos, calcular el total y gestionar interacciones
     con botones de incremento y decremento para las cantidades.
 
     Atributos:
@@ -20,6 +20,7 @@ class VentaList:
         _handle_increase(e): Maneja el incremento de la cantidad de un producto.
         clear(): Limpia la lista, pero mantiene la cabecera visible.
     """
+
     def __init__(self, on_cantidad_change=None):
         """Inicializa la lista de venta con un controlador opcional para cambios en la cantidad.
 
@@ -67,12 +68,12 @@ class VentaList:
     def update_items(self, items):
         """Actualiza la lista de productos con los datos proporcionados.
 
-        Crea filas para cada producto con su nombre, cantidad y total. Los botones de incremento y 
+        Crea filas para cada producto con su nombre, cantidad y total. Los botones de incremento y
         decremento permiten modificar la cantidad de productos.
 
         Args:
-            items (List[dict]): Lista de diccionarios que representan los productos a mostrar, 
-                                 donde cada diccionario debe contener 'nombre', 'cantidad', 
+            items (List[dict]): Lista de diccionarios que representan los productos a mostrar,
+                                 donde cada diccionario debe contener 'nombre', 'cantidad',
                                  'total', y 'producto_id'.
         """
         controls = [self._get_header()]
@@ -122,7 +123,7 @@ class VentaList:
     def _handle_decrease(self, e):
         """Disminuye la cantidad del producto seleccionado.
 
-        Este método es llamado cuando el botón de disminución es presionado. Si hay un controlador 
+        Este método es llamado cuando el botón de disminución es presionado. Si hay un controlador
         para el cambio de cantidad, se ejecuta con un valor negativo.
 
         Args:
@@ -134,7 +135,7 @@ class VentaList:
     def _handle_increase(self, e):
         """Aumenta la cantidad del producto seleccionado.
 
-        Este método es llamado cuando el botón de incremento es presionado. Si hay un controlador 
+        Este método es llamado cuando el botón de incremento es presionado. Si hay un controlador
         para el cambio de cantidad, se ejecuta con un valor positivo.
 
         Args:

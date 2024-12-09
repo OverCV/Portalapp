@@ -5,7 +5,7 @@ import flet as ft
 class VentaForm:
     """Formulario para realizar una venta.
 
-    Esta clase representa un formulario de venta que permite seleccionar un producto, ingresar el monto, 
+    Esta clase representa un formulario de venta que permite seleccionar un producto, ingresar el monto,
     y calcular el total y la devolución de una transacción. Además, cuenta con un botón para realizar la venta.
 
     Atributos:
@@ -14,11 +14,12 @@ class VentaForm:
         total_text (ft.Text): Texto que muestra el total de la venta.
         devolucion_text (ft.Text): Texto que muestra la cantidad a devolver.
         vender_button (ft.ElevatedButton): Botón para realizar la venta.
-    
+
     Métodos:
         update_options(new_options): Actualiza las opciones disponibles en el dropdown de productos.
         build(): Construye y retorna la estructura de la interfaz de usuario del formulario de venta.
     """
+
     def __init__(self, on_producto_change=None, on_monto_change=None, on_vender=None):
         """Inicializa el formulario de venta con los controles necesarios.
 
@@ -62,8 +63,8 @@ class VentaForm:
     def build(self):
         """Construye la interfaz de usuario del formulario de venta.
 
-        Este método organiza y devuelve la disposición de los elementos del formulario, 
-        incluyendo el campo de selección de producto, el campo de monto, los textos de total y devolución, 
+        Este método organiza y devuelve la disposición de los elementos del formulario,
+        incluyendo el campo de selección de producto, el campo de monto, los textos de total y devolución,
         y el botón de venta.
 
         Returns:
