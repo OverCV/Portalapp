@@ -14,8 +14,8 @@ from backend.models.producto import Producto
 def mostrar_productos(page: ft.Page, sql_manager: CSVManager) -> ft.View:
     """Muestra la vista de productos inicializada.
 
-    Esta función crea una instancia de la vista de productos (`ProductosView`) y la devuelve. 
-    Es utilizada para mostrar la lista de productos en la página proporcionada, 
+    Esta función crea una instancia de la vista de productos (`ProductosView`) y la devuelve.
+    Es utilizada para mostrar la lista de productos en la página proporcionada,
     utilizando el administrador de datos proporcionado.
 
     Args:
@@ -37,6 +37,7 @@ class ProductosView:
         page (ft.Page): La página principal donde se renderiza la vista.
         sql_manager (CSVManager): El administrador para manejar los datos de productos.
     """
+
     def __init__(self, page: ft.Page, sql_manager: CSVManager):
         """Inicializa la vista de productos, configurando el presentador y la interfaz de usuario.
 
@@ -148,6 +149,7 @@ class ProductosView:
         Args:
             producto (Producto): El producto que se desea eliminar.
         """
+
         def confirm_delete(e):
             self.presenter.delete_producto(producto)
             dialog.open = False
