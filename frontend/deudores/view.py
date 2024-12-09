@@ -23,16 +23,19 @@ class DeudoresView:
         deudas = self.presenter.obtener_deudas_de_deudor(deudor_id)
         contenido = ft.Column(
             [
-                ft.Text(f'Deuda #{d.id} por ${d.valor_deuda} pesos.', weight=ft.FontWeight.W_500)
+                ft.Text(
+                    f"Deuda #{d.id} por ${d.valor_deuda} pesos.",
+                    weight=ft.FontWeight.W_500,
+                )
                 for d in deudas
             ],
             spacing=10,
         )
         dialog = ft.AlertDialog(
-            title=ft.Text('Detalle de deudas'),
+            title=ft.Text("Detalle de deudas"),
             content=contenido,
             actions=[
-                ft.TextButton('Cerrar', on_click=lambda e: self.cerrar_dialogo()),
+                ft.TextButton("Cerrar", on_click=lambda e: self.cerrar_dialogo()),
             ],
         )
         self.page.dialog = dialog
@@ -40,27 +43,37 @@ class DeudoresView:
         self.page.update()
 
     def abrir_modal_abono_deudor(self, deudor_id: int):
-        input_abono = ft.TextField(label='Ingrese el monto del abono', keyboard_type='number')
+        input_abono = ft.TextField(
+            label="Ingrese el monto del abono", keyboard_type="number"
+        )
 
         def confirmar_abono(e):
-            if input_abono.value.isdigit():
+            if self.validar_abono(input_abono.value):
                 valor_abono = int(input_abono.value)
-                saldo_actual = self.presenter.saldo_de_deudor(deudor_id)
-                if 0 < valor_abono <= saldo_actual:
-                    self.presenter.registrar_abono_deudor(deudor_id, valor_abono)
-                    self.cerrar_dialogo()
+                self.presenter.registrar_abono_deudor(deudor_id, valor_abono)
+                self.cerrar_dialogo()
 
         dialog = ft.AlertDialog(
-            title=ft.Text('Registrar Abono'),
+            title=ft.Text("Registrar Abono"),
             content=input_abono,
             actions=[
-                ft.TextButton('Cancelar', on_click=lambda e: self.cerrar_dialogo()),
-                ft.TextButton('Confirmar', on_click=confirmar_abono),
+                ft.TextButton("Cancelar", on_click=lambda e: self.cerrar_dialogo()),
+                ft.TextButton("Confirmar", on_click=confirmar_abono),
             ],
         )
         self.page.dialog = dialog
         self.page.dialog.open = True
         self.page.update()
+
+    def validar_abono(self, valor_abono: str) -> bool:
+        if not valor_abono.isdigit():
+            self.mostrar_error("El monto ingresado no es válido.")
+            return False
+        valor_abono = int(valor_abono)
+        if valor_abono <= 0:
+            self.mostrar_error("El monto del abono debe ser mayor a 0.")
+            return False
+        return True
 
     def cerrar_dialogo(self):
         if self.page.dialog:
@@ -70,13 +83,15 @@ class DeudoresView:
 
     def crear_panel_deudor(self, deudor: Deudor):
         saldo_total = self.presenter.saldo_de_deudor(deudor.id)
+        if saldo_total == 0:
+            return None
         abonos_de_deudor = self.presenter.obtener_abonos_de_deudor(deudor.id)
 
         # Historial de abonos
         abonos_content = (
             ft.Column(
                 [
-                    ft.Text('Historial de abonos:', weight=ft.FontWeight.W_700),
+                    ft.Text("Historial de abonos:", weight=ft.FontWeight.W_700),
                 ]
                 + [
                     ft.Text(
@@ -88,13 +103,18 @@ class DeudoresView:
                 spacing=5,
             )
             if abonos_de_deudor
-            else ft.Text('No hay abonos registrados.', size=12, color=ft.colors.GREY_600)
+            else ft.Text(
+                "No hay abonos registrados.", size=12, color=ft.colors.GREY_600
+            )
         )
 
         # Content del panel
         panel_content = ft.Column([abonos_content], spacing=15)
 
         # Header con el saldo total y botón de abonar
+        nombre = (
+            deudor.nombre if len(deudor.nombre) < 20 else deudor.nombre[:20] + "..."
+        )
         header = ft.Row(
             [
                 ft.Container(
@@ -107,10 +127,12 @@ class DeudoresView:
                 ),
                 ft.Column(
                     [
-                        ft.Text(deudor.nombre, weight=ft.FontWeight.W_500),
+                        ft.Text(nombre, weight=ft.FontWeight.W_500),
                         ft.TextButton(
-                            text=f'Saldo Total: ${saldo_total}',
-                            on_click=lambda e, d_id=deudor.id: self.mostrar_modal_deudas(d_id),
+                            text=f"Saldo Total: ${saldo_total}",
+                            on_click=lambda e, d_id=deudor.id: self.mostrar_modal_deudas(
+                                d_id
+                            ),
                         ),
                     ],
                     alignment=ft.alignment.center,
@@ -120,13 +142,15 @@ class DeudoresView:
                     [
                         ft.IconButton(
                             icon=ft.icons.MONEY_OFF,
-                            icon_color='white',
-                            bgcolor='red',
+                            icon_color="white",
+                            bgcolor="red",
                             icon_size=20,
                             width=35,
                             height=35,
                             style=ft.ButtonStyle(shape=ft.CircleBorder()),
-                            on_click=lambda e, d_id=deudor.id: self.abrir_modal_abono_deudor(d_id),
+                            on_click=lambda e, d_id=deudor.id: self.abrir_modal_abono_deudor(
+                                d_id
+                            ),
                         ),
                     ],
                     alignment=ft.alignment.center,
@@ -147,17 +171,21 @@ class DeudoresView:
         deudores = self.presenter.obtener_deudores_con_deuda()
         panel_list = ft.ExpansionPanelList(
             expand=False,
-            controls=[self.crear_panel_deudor(deudor) for deudor in deudores],
+            controls=[
+                self.crear_panel_deudor(deudor)
+                for deudor in deudores
+                if self.crear_panel_deudor(deudor)
+            ],
         )
         self.deudores_list.controls.append(panel_list)
         self.page.update()
 
     def build(self):
         return ft.View(
-            '/deudores',
+            "/deudores",
             [
                 ft.AppBar(
-                    title=ft.Text('Mis deudores 💸'),
+                    title=ft.Text("Mis deudores 💸"),
                     center_title=True,
                 ),
                 ft.Container(
@@ -171,4 +199,13 @@ class DeudoresView:
 
     def actualizar_vista(self):
         self.init_view()
+        self.page.update()
+
+    def mostrar_error(self, mensaje: str):
+        """Muestra un mensaje de error o éxito al usuario.
+
+        Args:
+            mensaje (str): El mensaje que se desea mostrar al usuario.
+        """
+        self.page.show_snack_bar(ft.SnackBar(content=ft.Text(mensaje)))
         self.page.update()
