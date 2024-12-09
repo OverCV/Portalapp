@@ -122,10 +122,13 @@ class VentasPresenter:
         )
 
         self.deuda_dialog = ft.AlertDialog(
-            title=ft.Text('Generar deuda'),
+            title=ft.Text("Generar deuda"),
             content=ft.Column(
                 [
-                    ft.Text('El monto ingresado es insuficiente para realizar la venta.'),
+                    ft.Text(
+                        "El monto ingresado es insuficiente para realizar la venta."
+                    ),
+                    # Primera fila con el nombre_input y el botón de búsqueda
                     ft.Row(
                         [
                             ft.Column([self.nombre_input], width=200),
@@ -137,8 +140,8 @@ class VentasPresenter:
                 tight=True,
             ),
             actions=[
-                ft.TextButton('Confirmar deuda', on_click=self._confirmar_deuda),
-                ft.TextButton('Cancelar', on_click=lambda _: self._cerrar_dialog()),
+                ft.TextButton("Confirmar deuda", on_click=self._confirmar_deuda),
+                ft.TextButton("Cancelar", on_click=lambda _: self._cerrar_dialog()),
             ],
         )
 
@@ -168,8 +171,9 @@ class VentasPresenter:
             )
             self.buscar_icon.icon = ft.icons.ADD
         else:
-            self.nombre_input = ft.TextField(label='Nombre del Deudor', width=200)
-            self.buscar_icon.icon = ft.icons.SEARCH
+            # Cambiar a agregar nuevo deudor (TextField)
+            self.nombre_input = ft.TextField(label="Nombre del Deudor", width=200)
+            self.buscar_icon.icon = ft.icons.SEARCH  # Cambiar el ícono a "+"
 
         self.deuda_dialog.content = self._get_deuda_dialog_content()
         self.view.page.update()
@@ -186,7 +190,8 @@ class VentasPresenter:
         """
         return ft.Column(
             [
-                ft.Text('El monto ingresado es insuficiente para realizar la venta.'),
+                ft.Text("El monto ingresado es insuficiente para realizar la venta."),
+                # Primera fila con nombre_input y botón de búsqueda
                 ft.Row(
                     [
                         ft.Column([self.nombre_input], width=200),
@@ -218,7 +223,9 @@ class VentasPresenter:
             List[ft.dropdown.Option]: Lista de opciones de dropdown para productos con stock disponible.
         """
         return [
-            ft.dropdown.Option(key=str(p.id), text=p.nombre) for p in self.productos if p.stock > 0
+            ft.dropdown.Option(key=str(p.id), text=p.nombre)
+            for p in self.productos
+            if p.stock > 0
         ]
 
     def handle_producto_seleccionado(self, producto_id: str):
@@ -247,7 +254,7 @@ class VentasPresenter:
             if producto_venta.cantidad < producto.stock:
                 producto_venta.cantidad += 1
             else:
-                self.view.mostrar_error(f'Stock insuficiente para {producto.nombre}')
+                self.view.mostrar_error(f"Stock insuficiente para {producto.nombre}")
                 return
         else:
             self.productos_venta.append(ItemVenta(producto=producto, cantidad=1))
@@ -276,7 +283,9 @@ class VentasPresenter:
         nueva_cantidad = producto_venta.cantidad + delta
 
         if delta > 0 and nueva_cantidad > producto_venta.producto.stock:
-            self.view.mostrar_error(f'Stock insuficiente para {producto_venta.producto.nombre}')
+            self.view.mostrar_error(
+                f"Stock insuficiente para {producto_venta.producto.nombre}"
+            )
             return
 
         if nueva_cantidad < 1:
@@ -304,7 +313,7 @@ class VentasPresenter:
             self.view.actualizar_devolucion(devolucion)
             return devolucion
         except ValueError:
-            self.view.mostrar_error('El monto debe ser un número válido')
+            self.view.mostrar_error("El monto debe ser un número válido")
             self.view.limpiar_formulario()
             return 0
 
@@ -325,10 +334,10 @@ class VentasPresenter:
         # Actualizar lista de ventas
         items_venta = [
             {
-                'nombre': pv.producto.nombre,
-                'cantidad': pv.cantidad,
-                'total': pv.total,
-                'producto_id': pv.producto.id,
+                "nombre": pv.producto.nombre,
+                "cantidad": pv.cantidad,
+                "total": pv.total,
+                "producto_id": pv.producto.id,
             }
             for pv in self.productos_venta
         ]
@@ -355,7 +364,7 @@ class VentasPresenter:
             Exception: Si ocurre un error inesperado al procesar la venta.
         """
         if not self.productos_venta:
-            self.view.mostrar_error('No hay productos en la venta')
+            self.view.mostrar_error("No hay productos en la venta")
             return
 
         try:
@@ -364,11 +373,13 @@ class VentasPresenter:
                 return
 
             productos = [
-                {'id_producto': item.producto.id, 'cantidad': item.cantidad}
+                {"id_producto": item.producto.id, "cantidad": item.cantidad}
                 for item in self.productos_venta
             ]
 
-            self.venta_routes.create_venta({'productos': productos, 'monto_pagado': monto_pagado})
+            self.venta_routes.create_venta(
+                {"productos": productos, "monto_pagado": monto_pagado}
+            )
 
             # Recargar productos para tener el stock actualizado
             self.productos = self.producto_routes.get_productos_disponibles()
@@ -377,13 +388,13 @@ class VentasPresenter:
             self.productos_venta.clear()
             self._actualizar_vista()
             self.view.limpiar_formulario()
-            self.view.mostrar_error('Venta registrada correctamente')
+            self.view.mostrar_error("Venta registrada correctamente")
 
         except ValueError as e:
             self.view.mostrar_error(str(e))
         except Exception as e:
             print(e)
-            self.view.mostrar_error(f'Error al procesar la venta: {str(e)}')
+            self.view.mostrar_error(f"Error al procesar la venta: {str(e)}")
 
     def _mostrar_dialog_deuda(self):
         """
@@ -411,7 +422,7 @@ class VentasPresenter:
             # Si es búsqueda, se usa el AutoComplete para seleccionar
             if self.indice_deudor is None:
                 # Mostrar un error si no se seleccionó un deudor
-                self.view.show_error('Por favor, seleccione un deudor.')
+                self.view.show_error("Por favor, seleccione un deudor.")
                 return
             nombre_deudor = self.deudores[self.indice_deudor].nombre
             telefono_deudor = self.deudores[self.indice_deudor].telefono
@@ -419,30 +430,32 @@ class VentasPresenter:
             # Si no es búsqueda, se usa el TextField para agregar un nuevo deudor
             nombre_deudor = self.nombre_input.value.strip()
             telefono_deudor = self.telefono_input.value.strip()
+            if not self.validar_deudor(nombre_deudor, telefono_deudor):
+                return
             # Guardar nuevo deudor en el sistema
             nuevo_deudor = Deudor(id=-1, nombre=nombre_deudor, telefono=telefono_deudor)
             self.deudores.append(nuevo_deudor)
-            self.view.mostrar_error(f'Nuevo deudor agregado: {nombre_deudor}')
+            self.view.mostrar_error(f"Nuevo deudor agregado: {nombre_deudor}")
 
         if not nombre_deudor:
-            self.view.mostrar_error('El nombre del cliente es obligatorio')
+            self.view.mostrar_error("El nombre del cliente es obligatorio")
             return
 
         try:
             # Preparar datos
             productos = [
-                {'id_producto': item.producto.id, 'cantidad': item.cantidad}
+                {"id_producto": item.producto.id, "cantidad": item.cantidad}
                 for item in self.productos_venta
             ]
 
             # Crear venta a crédito
             self.venta_routes.create_venta(
                 {
-                    'productos': productos,
-                    'monto_pagado': 0,
-                    'deudor_info': {
-                        'nombre': nombre_deudor,
-                        'telefono': telefono_deudor,
+                    "productos": productos,
+                    "monto_pagado": 0,
+                    "deudor_info": {
+                        "nombre": nombre_deudor,
+                        "telefono": telefono_deudor,
                     },
                 }
             )
@@ -452,10 +465,35 @@ class VentasPresenter:
             self._actualizar_vista()
             self.view.limpiar_formulario()
             self._cerrar_dialog()
-            self.view.mostrar_error('Venta a crédito registrada correctamente')
+            self.view.mostrar_error("Venta a crédito registrada correctamente")
 
         except Exception as e:
-            self.view.mostrar_error(f'Error al registrar la venta a crédito: {str(e)}')
+            self.view.mostrar_error(f"Error al registrar la venta a crédito: {str(e)}")
+
+    def validar_deudor(self, nombre: str, telefono: str):
+        """Valida los datos de un deudor antes de guardarlo.
+
+        Args:
+            nombre (str): Nombre del deudor.
+            telefono (str): Teléfono del deudor.
+        """
+        if not nombre:
+            self.view.mostrar_error("El nombre del deudor es obligatorio.")
+            return False
+
+        if len(nombre) > 50:
+            self.view.mostrar_error(
+                "El nombre del deudor no puede exceder los 50 caracteres."
+            )
+            return False
+
+        if telefono and (not telefono.isdigit() or len(telefono) > 10):
+            self.view.mostrar_error(
+                "El teléfono debe ser un número de hasta 10 dígitos."
+            )
+            return False
+
+        return True
 
     def _cerrar_dialog(self):
         """
