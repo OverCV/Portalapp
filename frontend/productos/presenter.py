@@ -38,7 +38,6 @@ class ProductosPresenter:
         Returns:
             List[Producto]: Lista de productos cargados y filtrados.
         """
-        # TODO: Integrar con backend
         self.__all_productos = self.__sql_manager.get_data(Producto)
         return (
             self.__all_productos
@@ -202,5 +201,4 @@ class ProductosPresenter:
         Args:
             producto (Producto): El producto a eliminar.
         """
-        # TODO: Eliminar en backend
         self.__sql_manager.delete_data(Producto, producto.id)

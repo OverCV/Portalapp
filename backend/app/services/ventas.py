@@ -49,7 +49,7 @@ class VentaService:
                 cantidad=prod_info['cantidad'],
                 fecha=datetime.now(),
             )
-            producto_guardado = self.data_manager.add_data(venta_producto)
+            self.data_manager.add_data(venta_producto)
 
             # Actualizar stock
             producto = self.data_manager.get_data_by_id(Producto, prod_info['id_producto'])

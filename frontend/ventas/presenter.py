@@ -406,14 +406,14 @@ class VentasPresenter:
         self.deuda_dialog.open = True
         self.view.page.update()
 
-    def _confirmar_deuda(self, e):
+    def _confirmar_deuda(self, event):
         """
         Procesa la confirmación de una deuda, manejando dos escenarios:
         1. Selección de un deudor existente
         2. Creación de un nuevo deudor
 
         Args:
-            e: Evento que desencadena la confirmación de la deuda.
+            event: Evento que desencadena la confirmación de la deuda.
 
         Raises:
             Exception: Si ocurre un error al registrar la venta a crédito.
