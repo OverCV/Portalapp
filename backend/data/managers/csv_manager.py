@@ -47,7 +47,7 @@ class CSVManager:
 
     def register_model(self, model_class: Type[T], file_name: str):
         """
-        Lee datos de un archivo CSV y los convierte en una lista de instancias de modelo.
+        Leer datos de un archivo CSV y los convierte en una lista de instancias de modelo.
 
         Este método realiza los siguientes pasos:
         - Obtiene la ruta del archivo para la clase de modelo
