@@ -20,6 +20,7 @@ def main() -> None:
     fl.app(
         target=app.main,
         view=AppView.FLET_APP,
+        port=10000
     )
 
 
