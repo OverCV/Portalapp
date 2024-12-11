@@ -1,0 +1,13 @@
+[Unit]
+Description=Flet App
+After=network.target
+
+[Service]
+User=ubuntu
+Group=ubuntu
+WorkingDirectory=/home/ubuntu/flet-app
+Environment="PATH=/home/ubuntu/flet-app/.venv/bin"
+ExecStart=/home/ubuntu/flet-app/.venv/bin/python /home/ubuntu/flet-app/main.py
+
+[Install]
+WantedBy=multi-user.target

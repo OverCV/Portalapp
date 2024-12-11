@@ -19,7 +19,7 @@ def main() -> None:
     app: Portalapp = Portalapp()
     fl.app(
         target=app.main,
-        view=AppView.FLET_APP,
+        view=fl.AppView.WEB_BROWSER,
         port=10000
     )
 
