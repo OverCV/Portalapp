@@ -1,8 +1,9 @@
 services:
   - type: web
-    name: portalapp
+    name: Portalapp
     env: python
-    buildCommand: pip install -r requirements.txt
+    buildCommand: apt-get update && apt-get install -y libmpv1
+      pip install -r requirements.txt
     startCommand: flet run
     envVars:
       - key: PORT
