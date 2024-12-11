@@ -34,6 +34,8 @@ class ProductoCard(fl.Card):
             on_delete (Callable[[Producto], None]): Callback para manejar la acción de eliminación.
         """
         super().__init__()
+        stock_color = fl.colors.BLACK54 if producto.stock >= 5 else fl.colors.ERROR
+        
         self.content = fl.Container(
             content=(
                 fl.Row(
@@ -62,9 +64,7 @@ class ProductoCard(fl.Card):
                                         fl.Text(
                                             f'Stock: {producto.stock}',
                                             size=14,
-                                            color=fl.colors.BLACK54
-                                            if producto.stock >= 5
-                                            else fl.colors.ERROR,
+                                            color=stock_color
                                         ),
                                     ],
                                     spacing=2,
@@ -129,9 +129,7 @@ class ProductoCard(fl.Card):
                                         fl.Text(
                                             f'Stock: {producto.stock}',
                                             size=14,
-                                            color=fl.colors.BLACK54
-                                            if producto.stock >= 5
-                                            else fl.colors.ERROR,
+                                            color=stock_color
                                         ),
                                     ],
                                     spacing=2,
