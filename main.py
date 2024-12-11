@@ -20,7 +20,6 @@ def main() -> None:
     fl.app(
         target=app.main,
         view=fl.AppView.WEB_BROWSER,
-        port=10000
     )
 
 
