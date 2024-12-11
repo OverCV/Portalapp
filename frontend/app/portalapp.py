@@ -29,7 +29,7 @@ class Portalapp:
 
     def __init__(self):
         """Inicializa la aplicación configurando el manejador de datos y las rutas."""
-        self.__sql_manager = CSVManager()
+        self.__sql_manager: CSVManager = CSVManager()
         self.__app_routes: dict[str, Callable] = {
             AppRoutes.HOME: mostrar_inicio,
             AppRoutes.PRODUCTOS: mostrar_productos,
